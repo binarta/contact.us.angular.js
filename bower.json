@@ -1,20 +1,24 @@
 {
-    "name": "binarta.contact.us.angular",
-    "version": "0.0.0",
-    "main": "./src/contact.us.js",
-    "dependencies": {
-        "angular": "1.0.7"
-    },
-    "devDependencies": {
-        "angular-mocks": "1.0.7",
-        "thk-rest-client-mock":"0.0.0",
-        "thk-notifications-mock":"0.0.0"
-    },
-    "ignore": [
-        "**/.*",
-        "node_modules",
-        "bower_components",
-        "test",
-        "tests"
-    ]
+  "name": "binarta.contact.us.angular",
+  "main": "./src/contact.us.js",
+  "dependencies": {
+    "angular": "1.2.5",
+    "angular-route": "1.2.5"
+  },
+  "devDependencies": {
+    "angular-mocks": "1.2.5",
+    "thk-rest-client-mock": "0.0.*",
+    "thk-notifications-mock": "0.0.*"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "resolutions": {
+    "angular-mocks": "1.2.5",
+    "angular": "1.2.5"
+  }
 }
