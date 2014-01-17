@@ -1,23 +1,15 @@
-var $routeProviderReference;
 angular.module('contact.us', ['ngRoute'])
     .factory('submitContactUsMessage', ['$http', function($http) {
         return SubmitContactUsMessageFactory($http);
     }])
     .controller('ContactUsController', ['$scope', '$routeParams', 'submitContactUsMessage', 'topicMessageDispatcher', 'config', ContactUsController])
     .config(['$routeProvider', function ($routeProvider) {
-        $routeProviderReference = $routeProvider;
-    }])
-    .run(function(topicRegistry){
-        topicRegistry.subscribe('config.initialized', function (config) {
-            var version = '';
-            if(config.version) version = '?v=' + config.version;
-            $routeProviderReference
-                .when('/contact', {templateUrl: 'partials/contact.html'+version, title: 'Contact Us'})
-                .when('/contact/:subject', {templateUrl: 'partials/contact.html'+version, title: 'Contact Us'})
-                .when('/:locale/contact', {templateUrl: 'partials/contact.html'+version, title: 'Contact Us'})
-                .when('/:locale/contact/:subject', {templateUrl: 'partials/contact.html'+version, title: 'Contact Us'});
-        });
-    });
+        $routeProvider
+            .when('/contact', {templateUrl: 'partials/contact.html', title: 'Contact Us'})
+            .when('/contact/:subject', {templateUrl: 'partials/contact.html', title: 'Contact Us'})
+            .when('/:locale/contact', {templateUrl: 'partials/contact.html', title: 'Contact Us'})
+            .when('/:locale/contact/:subject', {templateUrl: 'partials/contact.html', title: 'Contact Us'});
+    }]);
 
 function SubmitContactUsMessageFactory($http) {
     return function(uri, data) {
