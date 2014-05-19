@@ -43,13 +43,10 @@ describe('contact-us', function () {
 
                 it('then pre-fill subject', inject(function($routeParams) {
                     expect(scope.subject).toEqual($routeParams.subject);
+                    expect(scope.mail.subject).toEqual($routeParams.subject);
                 }));
             });
         });
-
-        // given subject encoded in route
-        // when init
-        // then prefill the subject
 
         describe('on submit', function() {
             beforeEach(function() {
@@ -94,6 +91,29 @@ describe('contact-us', function () {
                     replyTo:scope.replyTo,
                     subject:scope.name + ': ' + scope.subject,
                     message:scope.message,
+                    namespace:config.namespace
+                }).respond(201, '');
+
+                scope.submit();
+
+                $httpBackend.flush();
+            });
+
+            it('with mail context', function() {
+                scope.init({useMailContext:true});
+
+                scope.mail.replyTo = 'dummy@thinkerit.be';
+                scope.mail.subject = 'subject';
+                scope.mail.message = 'message';
+                scope.mail.name = 'name';
+
+                config.baseUri = 'http://host/context/';
+                config.namespace = 'spec';
+                $httpBackend.expect('POST', config.baseUri + 'api/contact/us', {
+                    subject:scope.mail.name + ': ' + scope.mail.subject,
+                    replyTo:scope.mail.replyTo,
+                    message:scope.mail.message,
+                    name:scope.mail.name,
                     namespace:config.namespace
                 }).respond(201, '');
 

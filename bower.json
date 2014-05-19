@@ -16,9 +16,5 @@
     "bower_components",
     "test",
     "tests"
-  ],
-  "resolutions": {
-    "angular-mocks": "1.2.5",
-    "angular": "1.2.5"
-  }
+  ]
 }

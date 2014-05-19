@@ -31,12 +31,18 @@ function SubmitContactUsMessageFactory($http) {
 function ContactUsController($scope, $routeParams, submitContactUsMessage, topicMessageDispatcher, config) {
     var self = this;
     this.errors = {};
+    this.mailConfig = {};
+
+    $scope.init = function(mailConfig) {
+        self.mailConfig = mailConfig;
+    };
 
     var reset = function() {
         $scope.replyTo = '';
         $scope.subject = '';
         $scope.message = '';
         $scope.name = '';
+        $scope.mail = {};
     };
 
     var onSuccess = function() {
@@ -70,6 +76,10 @@ function ContactUsController($scope, $routeParams, submitContactUsMessage, topic
             subject: $subject,
             message: $scope.message
         };
+        if(self.mailConfig.useMailContext) {
+            data = $scope.mail;
+            data.subject = data.name != '' ? data.name + ': ' + data.subject : data.subject;
+        }
         if(config.namespace) data.namespace = config.namespace;
         submitContactUsMessage((config.baseUri || '') + 'api/contact/us', data).success(onSuccess).error(onError);
     };
@@ -96,4 +106,5 @@ function ContactUsController($scope, $routeParams, submitContactUsMessage, topic
 
     reset();
     $scope.subject = extractSubjectFromRouteOrEmpty();
+    $scope.mail.subject = extractSubjectFromRouteOrEmpty();
 }
