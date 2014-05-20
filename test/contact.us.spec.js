@@ -147,6 +147,19 @@ describe('contact-us', function () {
             expect(scope.message).toEqual("");
         });
 
+        it('on submit success execute passed in success handler', function () {
+            var successHandlerExecuted = false;
+            var success = function () {
+                successHandlerExecuted = true;
+            };
+            scope.init({success:success});
+            $httpBackend.expect('POST', /.*/).respond(201);
+            scope.submit();
+            $httpBackend.flush();
+
+            expect(successHandlerExecuted).toEqual(true);
+        });
+
         it('on submit success raise system.success notification', function() {
             $httpBackend.expect('POST', /.*/).respond(201);
             scope.submit();

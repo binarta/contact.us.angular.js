@@ -49,6 +49,7 @@ function ContactUsController($scope, $routeParams, submitContactUsMessage, topic
         $scope.sent = true;
         $scope.sending = false;
         reset();
+        if(self.mailConfig.success) self.mailConfig.success();
         topicMessageDispatcher.fire('system.success', {
             code:'contact.us.sent',
             default:'Your message was delivered successfully, thank you.'
