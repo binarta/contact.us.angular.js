@@ -1,4 +1,4 @@
-angular.module('contact.us', ['ngRoute'])
+angular.module('contact.us', ['ngRoute', 'notifications', 'config'])
     .factory('submitContactUsMessage', ['$http', function($http) {
         return SubmitContactUsMessageFactory($http);
     }])

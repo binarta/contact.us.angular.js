@@ -1,3 +1,5 @@
+angular.module('config', []);
+
 describe('contact-us', function () {
     var scope, $httpBackend, dispatcher, config;
 
