@@ -1,0 +1,13 @@
+{
+  "msgs":{
+    "default":{
+      "contact.us.sent": "Bedankt, jouw bericht werd goed verzonden."
+    },
+    "nl":{
+      "contact.us.sent": "Bedankt, jouw bericht werd goed verzonden."
+    },
+    "en":{
+      "contact.us.sent": "Your message was delivered successfully, thank you."
+    }
+  }
+}
