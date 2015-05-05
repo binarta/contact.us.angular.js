@@ -1,13 +1,19 @@
 {
   "msgs":{
     "default":{
-      "contact.us.sent": "Bedankt, jouw bericht werd goed verzonden."
+      "contact.us.sent": "Bedankt, jouw bericht werd goed verzonden.",
+      "contact.us.mail.from.label": "Van:",
+      "contact.us.mail.subject.label": "Onderwerp:"
     },
     "nl":{
-      "contact.us.sent": "Bedankt, jouw bericht werd goed verzonden."
+      "contact.us.sent": "Bedankt, jouw bericht werd goed verzonden.",
+      "contact.us.mail.from.label": "Van:",
+      "contact.us.mail.subject.label": "Onderwerp:"
     },
     "en":{
-      "contact.us.sent": "Your message was delivered successfully, thank you."
+      "contact.us.sent": "Your message was delivered successfully, thank you.",
+      "contact.us.mail.from.label": "From:",
+      "contact.us.mail.subject.label": "Subject:"
     }
   }
 }
