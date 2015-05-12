@@ -1,10 +1,12 @@
 angular.module('config', []);
 
 describe('contact-us', function () {
-    var scope, $httpBackend, dispatcher, config;
+    var scope, $httpBackend, dispatcher, config, localeResolver;
 
     beforeEach(module('contact.us'));
     beforeEach(inject(function ($rootScope, $injector) {
+        localeResolver = jasmine.createSpy('localeResolver');
+        localeResolver.andReturn('locale');
         scope = $rootScope.$new();
         config = {};
         $httpBackend = $injector.get('$httpBackend');
@@ -23,7 +25,7 @@ describe('contact-us', function () {
         var ctrl;
 
         function createController($controller) {
-            ctrl = $controller(ContactUsController, {$scope:scope, topicMessageDispatcher:dispatcher, config:config});
+            ctrl = $controller(ContactUsController, {$scope:scope, topicMessageDispatcher:dispatcher, config:config, localeResolver:localeResolver});
         }
 
         beforeEach(inject(createController));
@@ -63,7 +65,8 @@ describe('contact-us', function () {
                     $httpBackend.expect('POST', 'api/contact/us', {
                         replyTo:scope.replyTo,
                         subject:scope.name + ': ' + scope.subject,
-                        message:scope.message
+                        message:scope.message,
+                        locale:'locale'
                     }).respond(201, '');
 
                     scope.submit();
@@ -93,7 +96,8 @@ describe('contact-us', function () {
                     replyTo:scope.replyTo,
                     subject:scope.name + ': ' + scope.subject,
                     message:scope.message,
-                    namespace:config.namespace
+                    namespace:config.namespace,
+                    locale:'locale'
                 }).respond(201, '');
 
                 scope.submit();
@@ -116,7 +120,8 @@ describe('contact-us', function () {
                     replyTo:scope.mail.replyTo,
                     message:scope.mail.message,
                     name:scope.mail.name,
-                    namespace:config.namespace
+                    namespace:config.namespace,
+                    locale:'locale'
                 }).respond(201, '');
 
                 scope.submit();
@@ -133,7 +138,8 @@ describe('contact-us', function () {
             $httpBackend.expect('POST', 'api/contact/us', {
                 replyTo:scope.replyTo,
                 subject:scope.subject,
-                message:scope.message
+                message:scope.message,
+                locale:'locale'
             }).respond(201, '');
 
             scope.submit();

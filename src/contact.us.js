@@ -2,7 +2,7 @@ angular.module('contact.us', ['ngRoute', 'notifications', 'config'])
     .factory('submitContactUsMessage', ['$http', function($http) {
         return SubmitContactUsMessageFactory($http);
     }])
-    .controller('ContactUsController', ['$scope', '$routeParams', 'submitContactUsMessage', 'topicMessageDispatcher', 'config', ContactUsController])
+    .controller('ContactUsController', ['$scope', '$routeParams', 'submitContactUsMessage', 'topicMessageDispatcher', 'config', 'localeResolver', ContactUsController])
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider
             .when('/contact', {templateUrl: 'partials/contact.html', title: 'Contact Us'})
@@ -28,7 +28,7 @@ function SubmitContactUsMessageFactory($http) {
     }
 }
 
-function ContactUsController($scope, $routeParams, submitContactUsMessage, topicMessageDispatcher, config) {
+function ContactUsController($scope, $routeParams, submitContactUsMessage, topicMessageDispatcher, config, localeResolver) {
     var self = this;
     this.errors = {};
     this.mailConfig = {};
@@ -82,6 +82,7 @@ function ContactUsController($scope, $routeParams, submitContactUsMessage, topic
             data.subject = data.name != '' ? data.name + ': ' + data.subject : data.subject;
         }
         if(config.namespace) data.namespace = config.namespace;
+        data.locale = localeResolver();
         submitContactUsMessage((config.baseUri || '') + 'api/contact/us', data).success(onSuccess).error(onError);
     };
 
