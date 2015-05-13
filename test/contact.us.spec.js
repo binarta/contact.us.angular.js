@@ -89,44 +89,125 @@ describe('contact-us', function () {
                 });
             });
 
-            it('with config', function() {
-                config.baseUri = 'http://host/context/';
-                config.namespace = 'spec';
-                $httpBackend.expect('POST', config.baseUri + 'api/contact/us', {
-                    replyTo:scope.replyTo,
-                    subject:scope.name + ': ' + scope.subject,
-                    message:scope.message,
-                    namespace:config.namespace,
-                    locale:'locale'
-                }).respond(201, '');
+            describe('with config', function () {
+                beforeEach(function () {
+                    config.baseUri = 'http://host/context/';
+                    config.namespace = 'spec';
+                });
 
-                scope.submit();
+                describe('without mail context', function () {
+                    it('with all params', function() {
+                        $httpBackend.expect('POST', config.baseUri + 'api/contact/us', {
+                            replyTo:scope.replyTo,
+                            subject:scope.name + ': ' + scope.subject,
+                            message:scope.message,
+                            namespace:config.namespace,
+                            locale:'locale'
+                        }).respond(201, '');
 
-                $httpBackend.flush();
-            });
+                        scope.submit();
 
-            it('with mail context', function() {
-                scope.init({useMailContext:true});
+                        $httpBackend.flush();
+                    });
 
-                scope.mail.replyTo = 'dummy@thinkerit.be';
-                scope.mail.subject = 'subject';
-                scope.mail.message = 'message';
-                scope.mail.name = 'name';
+                    //it('without subject', function() {
+                    //    $httpBackend.expect('POST', config.baseUri + 'api/contact/us', {
+                    //        replyTo:scope.replyTo,
+                    //        message:scope.message,
+                    //        namespace:config.namespace,
+                    //        locale:'locale'
+                    //    }).respond(201, '');
+                    //
+                    //    scope.submit();
+                    //
+                    //    $httpBackend.flush();
+                    //});
 
-                config.baseUri = 'http://host/context/';
-                config.namespace = 'spec';
-                $httpBackend.expect('POST', config.baseUri + 'api/contact/us', {
-                    subject:scope.mail.name + ': ' + scope.mail.subject,
-                    replyTo:scope.mail.replyTo,
-                    message:scope.mail.message,
-                    name:scope.mail.name,
-                    namespace:config.namespace,
-                    locale:'locale'
-                }).respond(201, '');
+                    //it('without name', function() {
+                    //    $httpBackend.expect('POST', config.baseUri + 'api/contact/us', {
+                    //        replyTo:scope.replyTo,
+                    //        subject:scope.name,
+                    //        message:scope.message,
+                    //        namespace:config.namespace,
+                    //        locale:'locale'
+                    //    }).respond(201, '');
+                    //
+                    //    scope.submit();
+                    //
+                    //    $httpBackend.flush();
+                    //});
 
-                scope.submit();
+                });
 
-                $httpBackend.flush();
+                describe('with mail context', function () {
+                    beforeEach(function () {
+                        scope.init({useMailContext:true});
+                    });
+
+                    it('with all params', function() {
+                        scope.mail = {
+                            replyTo: 'dummy@thinkerit.be',
+                            subject: 'subject',
+                            message: 'message',
+                            name: 'name'
+                        };
+
+                        $httpBackend.expect('POST', config.baseUri + 'api/contact/us', {
+                            subject:scope.mail.name + ': ' + scope.mail.subject,
+                            replyTo:scope.mail.replyTo,
+                            message:scope.mail.message,
+                            name:scope.mail.name,
+                            namespace:config.namespace,
+                            locale:'locale'
+                        }).respond(201, '');
+
+                        scope.submit();
+
+                        $httpBackend.flush();
+                    });
+
+                    it('without subject', function() {
+                        scope.mail = {
+                            replyTo: 'dummy@thinkerit.be',
+                            message: 'without subject',
+                            name: 'name'
+                        };
+
+                        $httpBackend.expect('POST', config.baseUri + 'api/contact/us', {
+                            replyTo:scope.mail.replyTo,
+                            message:scope.mail.message,
+                            name:scope.mail.name,
+                            namespace:config.namespace,
+                            locale:'locale'
+                        }).respond(201, '');
+
+                        scope.submit();
+
+                        $httpBackend.flush();
+                    });
+
+                    it('without name', function() {
+                        scope.mail = {
+                            replyTo: 'dummy@thinkerit.be',
+                            subject: 'subject',
+                            message: 'message'
+                        };
+
+                        $httpBackend.expect('POST', config.baseUri + 'api/contact/us', {
+                            subject:'subject',
+                            replyTo:scope.mail.replyTo,
+                            message:scope.mail.message,
+                            namespace:config.namespace,
+                            locale:'locale'
+                        }).respond(201, '');
+
+                        scope.submit();
+
+                        $httpBackend.flush();
+                    });
+                });
+
+
             });
         });
 

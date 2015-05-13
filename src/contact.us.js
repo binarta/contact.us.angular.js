@@ -67,20 +67,27 @@ function ContactUsController($scope, $routeParams, submitContactUsMessage, topic
         self.errors = {};
         $scope.sending = true;
 
-        $subject = $scope.subject;
-        if($scope.name != ''){
-            $subject = $scope.name + ': ' + $scope.subject
+        var data = {};
+
+        if(self.mailConfig.useMailContext && $scope.mail) {
+            var mail = $scope.mail;
+            data = {
+                replyTo: mail.replyTo,
+                message: mail.message
+            };
+            if (mail.name) data.name = mail.name;
+            if (mail.subject && mail.name) data.subject = mail.name + ': ' + mail.subject;
+            else if(mail.subject) data.subject = mail.subject;
+        } else {
+            data = {
+                replyTo: $scope.replyTo,
+                message: $scope.message
+            };
+            if ($scope.subject && $scope.name) data.subject = $scope.name + ': ' + $scope.subject;
+            else if($scope.subject && !$scope.name) data.subject = $scope.subject;
+            else if(!$scope.subject && $scope.name) data.subject = $scope.name;
         }
 
-        var data = {
-            replyTo: $scope.replyTo,
-            subject: $subject,
-            message: $scope.message
-        };
-        if(self.mailConfig.useMailContext) {
-            data = $scope.mail;
-            data.subject = data.name != '' ? data.name + ': ' + data.subject : data.subject;
-        }
         if(config.namespace) data.namespace = config.namespace;
         data.locale = localeResolver();
         submitContactUsMessage((config.baseUri || '') + 'api/contact/us', data).success(onSuccess).error(onError);
