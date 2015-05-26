@@ -1,12 +1,12 @@
 {
   "msgs":{
     "default":{
-      "contact.us.sent": "Bedankt, jouw bericht werd goed verzonden.",
-      "contact.us.mail.subject":"Contact Formulier: ",
-      "contact.us.mail.name.label": "Naam:",
+      "contact.us.sent": "Your message was delivered successfully, thank you.",
+      "contact.us.mail.subject":"Contact Form: ",
+      "contact.us.mail.name.label": "Name:",
       "contact.us.mail.email.label": "Email:",
-      "contact.us.mail.from.label": "Van:",
-      "contact.us.mail.subject.label": "Onderwerp:"
+      "contact.us.mail.from.label": "From:",
+      "contact.us.mail.subject.label": "Subject:"
     },
     "nl":{
       "contact.us.sent": "Bedankt, jouw bericht werd goed verzonden.",
@@ -23,6 +23,22 @@
       "contact.us.mail.email.label": "Email:",
       "contact.us.mail.from.label": "From:",
       "contact.us.mail.subject.label": "Subject:"
+    },
+    "fr":{
+      "contact.us.sent": "Merci, votre message a bien été envoyé.",
+      "contact.us.mail.subject":"Formulaire de contact: ",
+      "contact.us.mail.name.label": "Nom:",
+      "contact.us.mail.email.label": "E-mail:",
+      "contact.us.mail.from.label": "De:",
+      "contact.us.mail.subject.label": "Sujet:"
+    },
+    "de":{
+      "contact.us.sent": "Vielen Dank. Ihr Bericht wurde erfolgreich gesendet.",
+      "contact.us.mail.subject":"Kontaktformular: ",
+      "contact.us.mail.name.label": "Name:",
+      "contact.us.mail.email.label": "E-Mail:",
+      "contact.us.mail.from.label": "Von:",
+      "contact.us.mail.subject.label": "Betrifft:"
     }
   }
 }
