@@ -2,7 +2,6 @@
   "name": "binarta.contact.us.angular",
   "main": [
     "./src/contact.us.js",
-    "./metadata.json",
     "./metadata-system.json"
   ],
   "dependencies": {
