@@ -25,7 +25,7 @@ describe('contact-us', function () {
         var ctrl;
 
         function createController($controller) {
-            ctrl = $controller(ContactUsController, {$scope:scope, topicMessageDispatcher:dispatcher, config:config, localeResolver:localeResolver});
+            ctrl = $controller('ContactUsController', {$scope:scope, topicMessageDispatcher:dispatcher, config:config, localeResolver:localeResolver});
         }
 
         beforeEach(inject(createController));
