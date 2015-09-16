@@ -51,11 +51,13 @@
             $scope.sending = false;
             reset();
             if(self.mailConfig.success) self.mailConfig.success();
-            topicMessageDispatcher.fire('system.success', {
-                code:'contact.us.sent',
-                default:'Your message was delivered successfully, thank you.'
-            });
-            topicMessageDispatcher.fire('contact.us.submit.success','');
+            if (self.mailConfig.successNotification != false) {
+                topicMessageDispatcher.fire('system.success', {
+                    code:'contact.us.sent',
+                    default:'Your message was delivered successfully, thank you.'
+                });
+                topicMessageDispatcher.fire('contact.us.submit.success','');
+            }
         };
 
         var onError = function(body, status) {

@@ -279,6 +279,23 @@ describe('contact-us', function () {
             expect(dispatcher['contact.us.submit.success']).toEqual('');
         });
 
+
+        describe('when initialized with successNotification flag disabled', function () {
+            beforeEach(function () {
+                scope.init({
+                    successNotification: false
+                });
+            });
+
+            it('do not send success notifications', function () {
+                $httpBackend.expect('POST', /.*/).respond(201);
+                scope.submit();
+                $httpBackend.flush();
+                expect(dispatcher['system.success']).toBeUndefined();
+                expect(dispatcher['contact.us.submit.success']).toBeUndefined();
+            });
+        });
+
         it('on submit error raise system.alert notification', function() {
             $httpBackend.expect('POST', /.*/).respond(500);
             scope.submit();
