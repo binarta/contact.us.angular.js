@@ -1,9 +1,9 @@
 (function () {
-    angular.module('contact.us', ['ngRoute', 'notifications', 'config'])
+    angular.module('contact.us', ['ngRoute', 'notifications', 'config', 'checkpoint'])
         .factory('submitContactUsMessage', ['$http', function($http) {
             return SubmitContactUsMessageFactory($http);
         }])
-        .controller('ContactUsController', ['$scope', '$routeParams', 'submitContactUsMessage', 'topicMessageDispatcher', 'config', 'localeResolver', ContactUsController])
+        .controller('ContactUsController', ['$scope', '$routeParams', 'submitContactUsMessage', 'topicMessageDispatcher', 'config', 'localeResolver', 'fetchAccountMetadata', ContactUsController])
         .config(['$routeProvider', function ($routeProvider) {
             $routeProvider
                 .when('/contact', {templateUrl: 'partials/contact.html', title: 'Contact Us'})
@@ -29,7 +29,7 @@
         }
     }
 
-    function ContactUsController($scope, $routeParams, submitContactUsMessage, topicMessageDispatcher, config, localeResolver) {
+    function ContactUsController($scope, $routeParams, submitContactUsMessage, topicMessageDispatcher, config, localeResolver, fetchAccountMetadata) {
         var self = this;
         this.errors = {};
         this.mailConfig = {};
@@ -117,5 +117,14 @@
         reset();
         $scope.subject = extractSubjectFromRouteOrEmpty();
         $scope.mail.subject = extractSubjectFromRouteOrEmpty();
+
+        fetchAccountMetadata({
+            ok: function (metadata) {
+                if (metadata.email) {
+                    $scope.replyTo = metadata.email;
+                    $scope.mail.replyTo = metadata.email;
+                }
+            }
+        });
     }
 })();

@@ -52,6 +52,19 @@ describe('contact-us', function () {
             });
         });
 
+        describe('given that the user is logged in', function () {
+            beforeEach(inject(function (fetchAccountMetadata) {
+                fetchAccountMetadata.calls[0].args[0].ok({
+                    email: 'email'
+                });
+            }));
+
+            it('then pre-fill replyTo', function () {
+                expect(scope.replyTo).toEqual('email');
+                expect(scope.mail.replyTo).toEqual('email');
+            });
+        });
+
         describe('on submit', function() {
             beforeEach(function() {
                 scope.replyTo = 'dummy@thinkerit.be';
