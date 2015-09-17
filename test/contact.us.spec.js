@@ -1,10 +1,10 @@
 angular.module('config', []);
 
 describe('contact-us', function () {
-    var scope, $httpBackend, dispatcher, config, localeResolver;
+    var scope, $httpBackend, dispatcher, config, localeResolver, $location;
 
     beforeEach(module('contact.us'));
-    beforeEach(inject(function ($rootScope, $injector) {
+    beforeEach(inject(function ($rootScope, $injector, _$location_) {
         localeResolver = jasmine.createSpy('localeResolver');
         localeResolver.andReturn('locale');
         scope = $rootScope.$new();
@@ -15,6 +15,7 @@ describe('contact-us', function () {
                 dispatcher[topic] = msg;
             }
         };
+        $location = _$location_;
     }));
     afterEach(function () {
         $httpBackend.verifyNoOutstandingExpectation();
@@ -122,34 +123,6 @@ describe('contact-us', function () {
 
                         $httpBackend.flush();
                     });
-
-                    //it('without subject', function() {
-                    //    $httpBackend.expect('POST', config.baseUri + 'api/contact/us', {
-                    //        replyTo:scope.replyTo,
-                    //        message:scope.message,
-                    //        namespace:config.namespace,
-                    //        locale:'locale'
-                    //    }).respond(201, '');
-                    //
-                    //    scope.submit();
-                    //
-                    //    $httpBackend.flush();
-                    //});
-
-                    //it('without name', function() {
-                    //    $httpBackend.expect('POST', config.baseUri + 'api/contact/us', {
-                    //        replyTo:scope.replyTo,
-                    //        subject:scope.name,
-                    //        message:scope.message,
-                    //        namespace:config.namespace,
-                    //        locale:'locale'
-                    //    }).respond(201, '');
-                    //
-                    //    scope.submit();
-                    //
-                    //    $httpBackend.flush();
-                    //});
-
                 });
 
                 describe('with mail context', function () {
@@ -167,11 +140,16 @@ describe('contact-us', function () {
 
                         $httpBackend.expect('POST', config.baseUri + 'api/contact/us', {
                             subject:scope.mail.name + ': ' + scope.mail.subject,
+                            originalSubject: scope.mail.subject,
                             replyTo:scope.mail.replyTo,
                             message:scope.mail.message,
                             name:scope.mail.name,
                             namespace:config.namespace,
-                            locale:'locale'
+                            locale:'locale',
+                            location: {
+                                host: 'server',
+                                absUrl: 'http://server/'
+                            }
                         }).respond(201, '');
 
                         scope.submit();
@@ -191,7 +169,11 @@ describe('contact-us', function () {
                             message:scope.mail.message,
                             name:scope.mail.name,
                             namespace:config.namespace,
-                            locale:'locale'
+                            locale:'locale',
+                            location: {
+                                host: 'server',
+                                absUrl: 'http://server/'
+                            }
                         }).respond(201, '');
 
                         scope.submit();
@@ -208,10 +190,57 @@ describe('contact-us', function () {
 
                         $httpBackend.expect('POST', config.baseUri + 'api/contact/us', {
                             subject:'subject',
+                            originalSubject: 'subject',
                             replyTo:scope.mail.replyTo,
                             message:scope.mail.message,
                             namespace:config.namespace,
-                            locale:'locale'
+                            locale:'locale',
+                            location: {
+                                host: 'server',
+                                absUrl: 'http://server/'
+                            }
+                        }).respond(201, '');
+
+                        scope.submit();
+
+                        $httpBackend.flush();
+                    });
+
+                    it('location information is sent', function () {
+                        scope.mail = {
+                            replyTo: 'dummy@thinkerit.be',
+                            message: 'message'
+                        };
+
+                        $httpBackend.expect('POST', config.baseUri + 'api/contact/us', {
+                            replyTo:scope.mail.replyTo,
+                            message:scope.mail.message,
+                            namespace:config.namespace,
+                            locale:'locale',
+                            location: {
+                                host: 'server',
+                                absUrl: 'http://server/'
+                            }
+                        }).respond(201, '');
+
+                        scope.submit();
+
+                        $httpBackend.flush();
+                    });
+
+                    it('with dynamic content', function () {
+                        scope.mail = {
+                            dynamic: 'foo'
+                        };
+
+                        $httpBackend.expect('POST', config.baseUri + 'api/contact/us', {
+                            dynamic: 'foo',
+                            namespace:config.namespace,
+                            locale:'locale',
+                            location: {
+                                host: 'server',
+                                absUrl: 'http://server/'
+                            }
                         }).respond(201, '');
 
                         scope.submit();
@@ -219,8 +248,6 @@ describe('contact-us', function () {
                         $httpBackend.flush();
                     });
                 });
-
-
             });
         });
 

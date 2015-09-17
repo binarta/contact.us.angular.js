@@ -2,7 +2,8 @@
   "name": "binarta.contact.us.angular",
   "main": [
     "./src/contact.us.js",
-    "./metadata-system.json"
+    "./metadata-system.json",
+    "./mail/ContactUsMail.template.mail"
   ],
   "dependencies": {
     "angular": "1.3.*",

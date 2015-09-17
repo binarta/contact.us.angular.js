@@ -3,7 +3,7 @@
         .factory('submitContactUsMessage', ['$http', function($http) {
             return SubmitContactUsMessageFactory($http);
         }])
-        .controller('ContactUsController', ['$scope', '$routeParams', 'submitContactUsMessage', 'topicMessageDispatcher', 'config', 'localeResolver', 'fetchAccountMetadata', ContactUsController])
+        .controller('ContactUsController', ['$scope', '$routeParams', '$location', 'submitContactUsMessage', 'topicMessageDispatcher', 'config', 'localeResolver', 'fetchAccountMetadata', ContactUsController])
         .config(['$routeProvider', function ($routeProvider) {
             $routeProvider
                 .when('/contact', {templateUrl: 'partials/contact.html', title: 'Contact Us'})
@@ -29,7 +29,7 @@
         }
     }
 
-    function ContactUsController($scope, $routeParams, submitContactUsMessage, topicMessageDispatcher, config, localeResolver, fetchAccountMetadata) {
+    function ContactUsController($scope, $routeParams, $location, submitContactUsMessage, topicMessageDispatcher, config, localeResolver, fetchAccountMetadata) {
         var self = this;
         this.errors = {};
         this.mailConfig = {};
@@ -71,16 +71,16 @@
             $scope.sending = true;
 
             var data = {};
-
             if(self.mailConfig.useMailContext && $scope.mail) {
-                var mail = $scope.mail;
-                data = {
-                    replyTo: mail.replyTo,
-                    message: mail.message
+                data = $scope.mail;
+                data.originalSubject = data.subject;
+                if (data.subject && data.name) {
+                    data.subject = data.name + ': ' + data.subject;
+                }
+                data.location = {
+                    host: $location.host(),
+                    absUrl: $location.absUrl()
                 };
-                if (mail.name) data.name = mail.name;
-                if (mail.subject && mail.name) data.subject = mail.name + ': ' + mail.subject;
-                else if(mail.subject) data.subject = mail.subject;
             } else {
                 data = {
                     replyTo: $scope.replyTo,

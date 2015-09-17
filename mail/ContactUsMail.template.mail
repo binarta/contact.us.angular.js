@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>\$subject</title>
+</head>
+
+<body bgcolor="#f6f6f6"
+      style="-webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif; font-size: 100%; height: 100%; line-height: 1.6em; margin: 0; padding: 0; width: 100%;">
+
+<!-- body -->
+<table class="body-wrap" bgcolor="#f6f6f6" style="padding: 20px; width: 100%;">
+    <tr>
+        <td></td>
+        <td class="container" bgcolor="#FFFFFF"
+            style="Margin: 0 auto; border: 1px solid #f0f0f0; clear: both; display: block; max-width: 600px; padding: 20px;">
+
+            <!-- content -->
+            <div class="content" style="display: block; margin: 0 auto; max-width: 600px;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td>
+                            <p style="font-size: 14px; font-weight: normal; margin-bottom: 10px;">\$message</p>
+
+                            <table class="divider" cellpadding="0" cellspacing="0" border="0" style="width: 100%;">
+                                <tr>
+                                    <td>
+                                        <span style="border-top: 1px solid #f6f6f6; display: inline-block; margin: 40px 0; width: 100%;"></span>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <p style="font-size: 14px; font-weight: normal; margin-bottom: 10px;">
+                            <ul style="font-size: 14px; font-weight: normal; margin-bottom: 10px; padding-left:0;">
+                                ${'<% if(originalSubject) {%>'}
+                                <li style="list-style-position: inside; margin-left: 5px;"><strong>\${i18n(key:'contact.us.mail.subject.label')}</strong>
+                                    \$originalSubject
+                                </li>
+                                ${'<% } %>'}
+                                ${'<% if(name) {%>'}
+                                <li style="list-style-position: inside; margin-left: 5px;">
+                                    <strong>\${i18n(key:'contact.us.mail.name.label')}</strong> \$name
+                                </li>
+                                ${'<% } %>'}
+                                <li style="list-style-position: inside; margin-left: 5px;">
+                                    <strong>\${i18n(key:'contact.us.mail.email.label')}</strong> \$replyTo
+                                </li>
+                                ${'<% if(order) {%>'}
+                                <li style="list-style-position: inside; margin-left: 5px;">
+                                    <strong>\${i18n(key:'contact.us.mail.order.number.label')}</strong> \${org.apache.commons.lang.StringUtils.substring(order.id, 0, 8)}
+                                </li>
+                                ${'<% } %>'}
+                            </ul>
+                            </p>
+                            ${'<% if(order) {%>'}
+                            <!-- button -->
+                            <table class="btn-primary" cellpadding="0" cellspacing="0" border="0"
+                                   style="Margin: 30px 0 10px; width: auto;">
+                                <tr>
+                                    <td style="background-color: #348eda; border-radius: 25px;>
+                                        <a href="\$location.absUrl" style="background-color: #348eda; border: solid 1px #348eda; border-radius: 25px;border-width: 10px 20px; color: #ffffff; cursor: pointer; display: inline-block;font-weight: bold; line-height: 2; text-decoration: none;">
+                                            \${i18n(key:'contact.us.mail.order.view.link')}
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                            <!-- /button -->
+                            ${'<% } %>'}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <!-- /content -->
+
+        </td>
+        <td></td>
+    </tr>
+</table>
+<!-- /body -->
+
+<!-- footer -->
+<table class="footer-wrap" style="clear: both; width: 100%;">
+    <tr>
+        <td></td>
+        <td class="container" style="Margin: 0 auto; clear: both; display: block; max-width: 600px;">
+
+            <!-- content -->
+            <div class="content" style="display: block; margin: 0 auto; max-width: 600px;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td align="center">
+                            <p style="color: #666666; font-size: 12px; font-weight: normal; margin-bottom: 10px;">
+                                \${i18n(key:'contact.us.mail.message.send.from')} <a href="\$location.absUrl" style="color: #999999;">\$location.host</a>
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <!-- /content -->
+
+        </td>
+        <td></td>
+    </tr>
+</table>
+<!-- /footer -->
+</body>
+</html>
