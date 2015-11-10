@@ -60,9 +60,15 @@ describe('contact-us', function () {
                 });
             }));
 
-            it('then pre-fill replyTo', function () {
-                expect(scope.replyTo).toEqual('email');
-                expect(scope.mail.replyTo).toEqual('email');
+            describe('and the user has no edit.mode permission', function () {
+                beforeEach(inject(function (activeUserHasPermission) {
+                    activeUserHasPermission.calls[0].args[0].no();
+                }));
+
+                it('then pre-fill replyTo', function () {
+                    expect(scope.replyTo).toEqual('email');
+                    expect(scope.mail.replyTo).toEqual('email');
+                });
             });
         });
 

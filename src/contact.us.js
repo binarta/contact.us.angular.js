@@ -3,7 +3,7 @@
         .factory('submitContactUsMessage', ['$http', function($http) {
             return SubmitContactUsMessageFactory($http);
         }])
-        .controller('ContactUsController', ['$scope', '$routeParams', '$location', 'submitContactUsMessage', 'topicMessageDispatcher', 'config', 'localeResolver', 'fetchAccountMetadata', ContactUsController])
+        .controller('ContactUsController', ['$scope', '$routeParams', '$location', 'submitContactUsMessage', 'topicMessageDispatcher', 'config', 'localeResolver', 'fetchAccountMetadata', 'activeUserHasPermission', ContactUsController])
         .config(['$routeProvider', function ($routeProvider) {
             $routeProvider
                 .when('/contact', {templateUrl: 'partials/contact.html', title: 'Contact Us'})
@@ -29,7 +29,7 @@
         }
     }
 
-    function ContactUsController($scope, $routeParams, $location, submitContactUsMessage, topicMessageDispatcher, config, localeResolver, fetchAccountMetadata) {
+    function ContactUsController($scope, $routeParams, $location, submitContactUsMessage, topicMessageDispatcher, config, localeResolver, fetchAccountMetadata, activeUserHasPermission) {
         var self = this;
         this.errors = {};
         this.mailConfig = {};
@@ -122,10 +122,15 @@
 
         fetchAccountMetadata({
             ok: function (metadata) {
-                if (metadata.email) {
-                    $scope.replyTo = metadata.email;
-                    $scope.mail.replyTo = metadata.email;
-                }
+                activeUserHasPermission({
+                    no: function () {
+                        if (metadata.email) {
+                            $scope.replyTo = metadata.email;
+                            $scope.mail.replyTo = metadata.email;
+                        }
+                    },
+                    scope: $scope
+                }, 'edit.mode');
             }
         });
     }
