@@ -7,9 +7,9 @@
       "contact.us.mail.email.label": "Email:",
       "contact.us.mail.from.label": "Van:",
       "contact.us.mail.subject.label": "Onderwerp:",
-      "contact.us.mail.order.number.label": "Order #:",
-      "contact.us.mail.order.view.link": "View order details",
-      "contact.us.mail.message.send.from": "This message was sent from"
+      "contact.us.mail.order.number.label": "Bestel #:",
+      "contact.us.mail.order.view.link": "Bekijk bestel details",
+      "contact.us.mail.message.send.from": "Dit bericht is verzonden vanaf"
     },
     "en":{
       "contact.us.sent": "Your message was delivered successfully, thank you.",
