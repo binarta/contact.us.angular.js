@@ -1,0 +1,5 @@
+{
+  "default": {
+    "contact.us": "bower_components/binarta.contact.us.angular/src/contact.us.js"
+  }
+}

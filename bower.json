@@ -3,17 +3,17 @@
   "main": [
     "./src/contact.us.js",
     "./metadata-system.json",
-    "./mail/ContactUsMail.template.mail"
+    "./mail/ContactUsMail.template.mail",
+    "./sources.json"
   ],
   "dependencies": {
-    "angular": "1.3.*",
-    "angular-route": "1.3.*",
+    "binarta.angularx": "0.*.*",
     "binarta.notifications.angular": "1.*.*",
     "binarta.config.angular": "0.*.*",
     "binarta.checkpoint.angular": "0.*.*"
   },
   "devDependencies": {
-    "angular-mocks": "1.3.*",
+    "angular-mocks": "1.*.*",
     "thk-rest-client-mock": "0.*.*",
     "thk-notifications-mock": "0.*.*"
   },
@@ -23,8 +23,5 @@
     "bower_components",
     "test",
     "tests"
-  ],
-  "resolutions": {
-    "angular": "1.3.*"
-  }
+  ]
 }

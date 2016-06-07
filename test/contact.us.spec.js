@@ -6,7 +6,7 @@ describe('contact-us', function () {
     beforeEach(module('contact.us'));
     beforeEach(inject(function ($rootScope, $injector, _$location_) {
         localeResolver = jasmine.createSpy('localeResolver');
-        localeResolver.andReturn('locale');
+        localeResolver.and.returnValue('locale');
         scope = $rootScope.$new();
         config = {};
         $httpBackend = $injector.get('$httpBackend');
@@ -55,14 +55,14 @@ describe('contact-us', function () {
 
         describe('given that the user is logged in', function () {
             beforeEach(inject(function (fetchAccountMetadata) {
-                fetchAccountMetadata.calls[0].args[0].ok({
+                fetchAccountMetadata.calls.first().args[0].ok({
                     email: 'email'
                 });
             }));
 
             describe('and the user has no edit.mode permission', function () {
                 beforeEach(inject(function (activeUserHasPermission) {
-                    activeUserHasPermission.calls[0].args[0].no();
+                    activeUserHasPermission.calls.first().args[0].no();
                 }));
 
                 it('then pre-fill replyTo', function () {
