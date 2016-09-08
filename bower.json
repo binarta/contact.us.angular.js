@@ -9,8 +9,7 @@
   "dependencies": {
     "binarta.angularx": "0.*.*",
     "binarta.notifications.angular": "1.*.*",
-    "binarta.config.angular": "0.*.*",
-    "binarta.checkpoint.angular": "0.*.*"
+    "binarta.config.angular": "0.*.*"
   },
   "devDependencies": {
     "angular-mocks": "1.*.*",
