@@ -22,31 +22,36 @@ describe('contact-us', function () {
         $httpBackend.verifyNoOutstandingRequest();
     });
 
-    describe('ContactUsController', function() {
+    describe('ContactUsController', function () {
         var ctrl;
 
         function createController($controller) {
-            ctrl = $controller('ContactUsController', {$scope:scope, topicMessageDispatcher:dispatcher, config:config, localeResolver:localeResolver});
+            ctrl = $controller('ContactUsController', {
+                $scope: scope,
+                topicMessageDispatcher: dispatcher,
+                config: config,
+                localeResolver: localeResolver
+            });
         }
 
         beforeEach(inject(createController));
 
-        it('on init', function() {
+        it('on init', function () {
             expect(scope.replyTo).toEqual("");
             expect(scope.subject).toEqual("");
             expect(scope.message).toEqual("");
             expect(scope.name).toEqual("");
         });
 
-        describe('given a subject is encoded in the current route', function() {
-            beforeEach(inject(function($routeParams) {
+        describe('given a subject is encoded in the current route', function () {
+            beforeEach(inject(function ($routeParams) {
                 $routeParams.subject = 'subject';
             }));
 
-            describe('at construction time', function() {
+            describe('at construction time', function () {
                 beforeEach(inject(createController));
 
-                it('then pre-fill subject', inject(function($routeParams) {
+                it('then pre-fill subject', inject(function ($routeParams) {
                     expect(scope.subject).toEqual($routeParams.subject);
                     expect(scope.mail.subject).toEqual($routeParams.subject);
                 }));
@@ -72,32 +77,32 @@ describe('contact-us', function () {
             });
         });
 
-        describe('on submit', function() {
-            beforeEach(function() {
+        describe('on submit', function () {
+            beforeEach(function () {
                 scope.replyTo = 'dummy@thinkerit.be';
                 scope.subject = 'subject';
                 scope.message = 'message';
                 scope.name = 'name';
             });
 
-            describe('without config', function() {
-                beforeEach(function() {
+            describe('without config', function () {
+                beforeEach(function () {
                     $httpBackend.expect('POST', 'api/contact/us', {
-                        replyTo:scope.replyTo,
-                        subject:scope.name + ': ' + scope.subject,
-                        message:scope.message,
-                        locale:'locale'
+                        replyTo: scope.replyTo,
+                        subject: scope.name + ': ' + scope.subject,
+                        message: scope.message,
+                        locale: 'locale'
                     }).respond(201, '');
 
                     scope.submit();
                 });
 
-                it('enter sending state', function() {
+                it('enter sending state', function () {
                     expect(scope.sending).toEqual(true);
                     $httpBackend.flush();
                 });
 
-                it('reset form', function() {
+                it('reset form', function () {
                     $httpBackend.flush();
 
                     expect(scope.sending).toEqual(false);
@@ -116,13 +121,13 @@ describe('contact-us', function () {
                 });
 
                 describe('without mail context', function () {
-                    it('with all params', function() {
+                    it('with all params', function () {
                         $httpBackend.expect('POST', config.baseUri + 'api/contact/us', {
-                            replyTo:scope.replyTo,
-                            subject:scope.name + ': ' + scope.subject,
-                            message:scope.message,
-                            namespace:config.namespace,
-                            locale:'locale'
+                            replyTo: scope.replyTo,
+                            subject: scope.name + ': ' + scope.subject,
+                            message: scope.message,
+                            namespace: config.namespace,
+                            locale: 'locale'
                         }).respond(201, '');
 
                         scope.submit();
@@ -133,10 +138,10 @@ describe('contact-us', function () {
 
                 describe('with mail context', function () {
                     beforeEach(function () {
-                        scope.init({useMailContext:true});
+                        scope.init({useMailContext: true});
                     });
 
-                    it('with all params', function() {
+                    it('with all params', function () {
                         scope.mail = {
                             replyTo: 'dummy@thinkerit.be',
                             subject: 'subject',
@@ -145,13 +150,13 @@ describe('contact-us', function () {
                         };
 
                         $httpBackend.expect('POST', config.baseUri + 'api/contact/us', {
-                            subject:scope.mail.name + ': ' + scope.mail.subject,
+                            subject: scope.mail.name + ': ' + scope.mail.subject,
                             originalSubject: scope.mail.subject,
-                            replyTo:scope.mail.replyTo,
-                            message:scope.mail.message,
-                            name:scope.mail.name,
-                            namespace:config.namespace,
-                            locale:'locale',
+                            replyTo: scope.mail.replyTo,
+                            message: scope.mail.message,
+                            name: scope.mail.name,
+                            namespace: config.namespace,
+                            locale: 'locale',
                             location: {
                                 host: 'server',
                                 absUrl: 'http://server/'
@@ -163,7 +168,7 @@ describe('contact-us', function () {
                         $httpBackend.flush();
                     });
 
-                    it('without subject', function() {
+                    it('without subject', function () {
                         scope.mail = {
                             replyTo: 'dummy@thinkerit.be',
                             message: 'without subject',
@@ -171,11 +176,11 @@ describe('contact-us', function () {
                         };
 
                         $httpBackend.expect('POST', config.baseUri + 'api/contact/us', {
-                            replyTo:scope.mail.replyTo,
-                            message:scope.mail.message,
-                            name:scope.mail.name,
-                            namespace:config.namespace,
-                            locale:'locale',
+                            replyTo: scope.mail.replyTo,
+                            message: scope.mail.message,
+                            name: scope.mail.name,
+                            namespace: config.namespace,
+                            locale: 'locale',
                             location: {
                                 host: 'server',
                                 absUrl: 'http://server/'
@@ -187,7 +192,7 @@ describe('contact-us', function () {
                         $httpBackend.flush();
                     });
 
-                    it('without name', function() {
+                    it('without name', function () {
                         scope.mail = {
                             replyTo: 'dummy@thinkerit.be',
                             subject: 'subject',
@@ -195,12 +200,12 @@ describe('contact-us', function () {
                         };
 
                         $httpBackend.expect('POST', config.baseUri + 'api/contact/us', {
-                            subject:'subject',
+                            subject: 'subject',
                             originalSubject: 'subject',
-                            replyTo:scope.mail.replyTo,
-                            message:scope.mail.message,
-                            namespace:config.namespace,
-                            locale:'locale',
+                            replyTo: scope.mail.replyTo,
+                            message: scope.mail.message,
+                            namespace: config.namespace,
+                            locale: 'locale',
                             location: {
                                 host: 'server',
                                 absUrl: 'http://server/'
@@ -219,10 +224,10 @@ describe('contact-us', function () {
                         };
 
                         $httpBackend.expect('POST', config.baseUri + 'api/contact/us', {
-                            replyTo:scope.mail.replyTo,
-                            message:scope.mail.message,
-                            namespace:config.namespace,
-                            locale:'locale',
+                            replyTo: scope.mail.replyTo,
+                            message: scope.mail.message,
+                            namespace: config.namespace,
+                            locale: 'locale',
                             location: {
                                 host: 'server',
                                 absUrl: 'http://server/'
@@ -241,8 +246,8 @@ describe('contact-us', function () {
 
                         $httpBackend.expect('POST', config.baseUri + 'api/contact/us', {
                             dynamic: 'foo',
-                            namespace:config.namespace,
-                            locale:'locale',
+                            namespace: config.namespace,
+                            locale: 'locale',
                             location: {
                                 host: 'server',
                                 absUrl: 'http://server/'
@@ -257,16 +262,16 @@ describe('contact-us', function () {
             });
         });
 
-        it('on submit without name', function() {
+        it('on submit without name', function () {
             scope.replyTo = 'dummy@thinkerit.be';
             scope.subject = 'subject';
             scope.message = 'message';
 
             $httpBackend.expect('POST', 'api/contact/us', {
-                replyTo:scope.replyTo,
-                subject:scope.subject,
-                message:scope.message,
-                locale:'locale'
+                replyTo: scope.replyTo,
+                subject: scope.subject,
+                message: scope.message,
+                locale: 'locale'
             }).respond(201, '');
 
             scope.submit();
@@ -287,7 +292,7 @@ describe('contact-us', function () {
             var success = function () {
                 successHandlerExecuted = true;
             };
-            scope.init({success:success});
+            scope.init({success: success});
             $httpBackend.expect('POST', /.*/).respond(201);
             scope.submit();
             $httpBackend.flush();
@@ -295,17 +300,17 @@ describe('contact-us', function () {
             expect(successHandlerExecuted).toEqual(true);
         });
 
-        it('on submit success raise system.success notification', function() {
+        it('on submit success raise system.success notification', function () {
             $httpBackend.expect('POST', /.*/).respond(201);
             scope.submit();
             $httpBackend.flush();
             expect(dispatcher['system.success']).toEqual({
-                code:'contact.us.sent',
-                default:'Your message was delivered successfully, thank you.'
+                code: 'contact.us.sent',
+                default: 'Your message was delivered successfully, thank you.'
             });
         });
 
-        it('on submit success raise contact.us.submit.success notification', function() {
+        it('on submit success raise contact.us.submit.success notification', function () {
             $httpBackend.expect('POST', /.*/).respond(201);
             scope.submit();
             $httpBackend.flush();
@@ -329,19 +334,19 @@ describe('contact-us', function () {
             });
         });
 
-        it('on submit error raise system.alert notification', function() {
+        it('on submit error raise system.alert notification', function () {
             $httpBackend.expect('POST', /.*/).respond(500);
             scope.submit();
             $httpBackend.flush();
             expect(dispatcher['system.alert']).toEqual(500);
         });
 
-        it('empty error class', function() {
+        it('empty error class', function () {
             expect(scope.errorClassFor('field')).toEqual('')
         });
 
-        it('on submit rejected', function() {
-            $httpBackend.when('POST', /.*/).respond(412, {field:['violation']});
+        it('on submit rejected', function () {
+            $httpBackend.when('POST', /.*/).respond(412, {field: ['violation']});
             scope.submit();
 
             expect(scope.sending).toEqual(true);
@@ -353,15 +358,15 @@ describe('contact-us', function () {
             expect(scope.violations('field')).toEqual(['violation']);
         });
 
-        it('submit resets errors', function() {
+        it('submit resets errors', function () {
             $httpBackend.when('POST', /.*/).respond(201, '');
-            ctrl.errors = {field:['error']};
+            ctrl.errors = {field: ['error']};
             scope.submit();
             $httpBackend.flush();
             expect(scope.errorClassFor('field')).toEqual('');
         });
 
-        it('confirm mail sent', function() {
+        it('confirm mail sent', function () {
             scope.sent = true;
             scope.confirm();
             expect(scope.sent).toEqual(false);
