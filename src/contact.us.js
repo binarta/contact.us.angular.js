@@ -1,7 +1,8 @@
 (function () {
-    angular.module('contact.us', ['ngRoute', 'notifications', 'config', 'checkpoint'])
-        .factory('submitContactUsMessage', ['$http', function ($http) {
-            return SubmitContactUsMessageFactory($http);
+
+    angular.module('contact.us', ['ngRoute', 'notifications', 'config', 'checkpoint', 'binarta-applicationjs-angular1'])
+        .factory('submitContactUsMessage', ['binarta', function (binarta) {
+            return SubmitContactUsMessageFactory(binarta);
         }])
         .controller('ContactUsController', ['$scope', '$routeParams', '$location', 'submitContactUsMessage', 'topicMessageDispatcher', 'config', 'localeResolver', 'fetchAccountMetadata', 'activeUserHasPermission', ContactUsController])
         .config(['$routeProvider', function ($routeProvider) {
@@ -12,20 +13,10 @@
                 .when('/:locale/contact/:subject', {templateUrl: 'partials/contact.html', title: 'Contact Us'});
         }]);
 
-    function SubmitContactUsMessageFactory($http) {
-        return function (uri, data) {
-            var promise = $http.post(uri, data);
-            var wrapper = {
-                success: function (cb) {
-                    promise.success(cb);
-                    return wrapper;
-                },
-                error: function (cb) {
-                    promise.error(cb);
-                    return wrapper;
-                }
-            };
-            return wrapper;
+
+    function SubmitContactUsMessageFactory(binarta) {
+        return function (data, response) {
+            binarta.application.gateway.submitContactForm(data, response);
         }
     }
 
@@ -63,7 +54,7 @@
         var onError = function (body, status) {
             $scope.sending = false;
             if (status == 412) self.errors = body;
-            else topicMessageDispatcher.fire('system.alert', status);
+            topicMessageDispatcher.fire('system.alert', status);
         };
 
         $scope.submit = function () {
@@ -93,7 +84,7 @@
 
             if (config.namespace) data.namespace = config.namespace;
             data.locale = localeResolver();
-            submitContactUsMessage((config.baseUri || '') + 'api/contact/us', data).success(onSuccess).error(onError);
+            submitContactUsMessage(data, {success: onSuccess, rejected: onError});
         };
 
         $scope.confirm = function () {
