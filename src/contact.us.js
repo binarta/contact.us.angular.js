@@ -1,5 +1,4 @@
 (function () {
-
     angular.module('contact.us', ['ngRoute', 'notifications', 'config', 'checkpoint', 'binarta-applicationjs-angular1'])
         .factory('submitContactUsMessage', ['binarta', function (binarta) {
             return SubmitContactUsMessageFactory(binarta);

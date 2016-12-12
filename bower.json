@@ -1,11 +1,6 @@
 {
   "name": "binarta.contact.us.angular",
-  "main": [
-    "./src/contact.us.js",
-    "./metadata-system.json",
-    "./mail/ContactUsMail.template.mail",
-    "./sources.json"
-  ],
+  "main": "./src/contact.us.js",
   "dependencies": {
     "binarta.angularx": "0.*.*",
     "binarta.notifications.angular": "1.*.*",
@@ -24,8 +19,5 @@
     "bower_components",
     "test",
     "tests"
-  ],
-  "resolutions": {
-    "angular": "1.5.*"
-  }
+  ]
 }

@@ -123,7 +123,6 @@ describe('contact-us', function () {
 
                 describe('without mail context', function () {
                     it('with all params', function () {
-
                         scope.submit();
                         expect(gateway.submitContactForm).toHaveBeenCalledWith({
                             replyTo: scope.replyTo,
@@ -147,7 +146,6 @@ describe('contact-us', function () {
                             message: 'message',
                             name: 'name'
                         };
-
                         scope.submit();
                         expect(gateway.submitContactForm).toHaveBeenCalledWith({
                             subject:  scope.mail.subject,
@@ -171,7 +169,6 @@ describe('contact-us', function () {
                             message: 'without subject',
                             name: 'name'
                         };
-
                         scope.submit();
                         expect(gateway.submitContactForm).toHaveBeenCalledWith({
                             replyTo: scope.mail.replyTo,
@@ -185,7 +182,6 @@ describe('contact-us', function () {
                                 absUrl: 'http://server/'
                             }
                         }, callbacks);
-
                     });
 
                     it('without name', function () {
@@ -194,9 +190,7 @@ describe('contact-us', function () {
                             subject: 'subject',
                             message: 'message'
                         };
-
                         scope.submit();
-
                         expect(gateway.submitContactForm).toHaveBeenCalledWith({
                             subject: 'subject',
                             originalSubject: 'subject',
@@ -216,9 +210,7 @@ describe('contact-us', function () {
                             replyTo: 'dummy@thinkerit.be',
                             message: 'message'
                         };
-
                         scope.submit();
-
                         expect(gateway.submitContactForm).toHaveBeenCalledWith({
                             replyTo: scope.mail.replyTo,
                             message: scope.mail.message,
@@ -237,7 +229,6 @@ describe('contact-us', function () {
                             dynamic: 'foo'
                         };
                         scope.submit();
-
                         expect(gateway.submitContactForm).toHaveBeenCalledWith({
                             dynamic: 'foo',
                             namespace: config.namespace,
@@ -258,18 +249,15 @@ describe('contact-us', function () {
             scope.subject = 'subject';
             scope.message = 'message';
             scope.submit();
-
             expect(gateway.submitContactForm).toHaveBeenCalledWith({
                 replyTo: scope.replyTo,
                 subject: scope.subject,
                 message: scope.message,
                 locale: 'locale'
             }, callbacks);
-
             expect(scope.sending).toEqual(true);
 
             gateway.submitContactForm.calls.first().args[1].success();
-
             expect(scope.sending).toEqual(false);
             expect(scope.sent).toEqual(true);
             expect(scope.replyTo).toEqual("");
@@ -285,14 +273,12 @@ describe('contact-us', function () {
             scope.init({success: success});
             scope.submit();
             gateway.submitContactForm.calls.first().args[1].success();
-
             expect(successHandlerExecuted).toEqual(true);
         });
 
         it('on submit success raise system.success notification', function () {
             scope.submit();
             gateway.submitContactForm.calls.first().args[1].success();
-
             expect(dispatcher['system.success']).toEqual({
                 code: 'contact.us.sent',
                 default: 'Your message was delivered successfully, thank you.'
@@ -302,7 +288,6 @@ describe('contact-us', function () {
         it('on submit success raise contact.us.submit.success notification', function () {
             scope.submit();
             gateway.submitContactForm.calls.first().args[1].success();
-
             expect(dispatcher['contact.us.submit.success']).toEqual('');
         });
 
@@ -317,7 +302,6 @@ describe('contact-us', function () {
             it('do not send success notifications', function () {
                 scope.submit();
                 gateway.submitContactForm.calls.first().args[1].success();
-
                 expect(dispatcher['system.success']).toBeUndefined();
                 expect(dispatcher['contact.us.submit.success']).toBeUndefined();
             });
@@ -335,10 +319,9 @@ describe('contact-us', function () {
 
         it('on submit rejected', function () {
             scope.submit();
-
             expect(scope.sending).toEqual(true);
-            gateway.submitContactForm.calls.first().args[1].rejected({field: ['violation']}, 412);
 
+            gateway.submitContactForm.calls.first().args[1].rejected({field: ['violation']}, 412);
             expect(scope.sending).toEqual(false);
             expect(scope.errorClassFor('field')).toEqual('error');
             expect(scope.violations('field')).toEqual(['violation']);
@@ -346,9 +329,7 @@ describe('contact-us', function () {
 
         it('submit resets errors', function () {
             ctrl.errors = {field: ['error']};
-
             scope.submit();
-
             gateway.submitContactForm.calls.first().args[1].success();
             expect(scope.errorClassFor('field')).toEqual('');
         });
