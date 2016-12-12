@@ -1,52 +1,57 @@
 angular.module('config', []);
 
 describe('contact-us', function () {
-    var scope, $httpBackend, dispatcher, config, localeResolver, $location;
+    var scope, dispatcher, config, localeResolver, $location, binarta, gateway, callbacks;
 
     beforeEach(module('contact.us'));
-    beforeEach(inject(function ($rootScope, $injector, _$location_) {
+    beforeEach(module('binartajs-angular1-spec'));
+    beforeEach(inject(function ($rootScope, _$location_, _binarta_) {
         localeResolver = jasmine.createSpy('localeResolver');
         localeResolver.and.returnValue('locale');
         scope = $rootScope.$new();
         config = {};
-        $httpBackend = $injector.get('$httpBackend');
         dispatcher = {
             fire: function (topic, msg) {
                 dispatcher[topic] = msg;
             }
         };
         $location = _$location_;
+        binarta = _binarta_;
+        gateway = binarta.application.gateway;
+        spyOn(gateway, 'submitContactForm');
+        callbacks = {success: jasmine.any(Function), rejected: jasmine.any(Function)};
     }));
-    afterEach(function () {
-        $httpBackend.verifyNoOutstandingExpectation();
-        $httpBackend.verifyNoOutstandingRequest();
-    });
 
-    describe('ContactUsController', function() {
+    describe('ContactUsController', function () {
         var ctrl;
 
         function createController($controller) {
-            ctrl = $controller('ContactUsController', {$scope:scope, topicMessageDispatcher:dispatcher, config:config, localeResolver:localeResolver});
+            ctrl = $controller('ContactUsController', {
+                $scope: scope,
+                topicMessageDispatcher: dispatcher,
+                config: config,
+                localeResolver: localeResolver
+            });
         }
 
         beforeEach(inject(createController));
 
-        it('on init', function() {
+        it('on init', function () {
             expect(scope.replyTo).toEqual("");
             expect(scope.subject).toEqual("");
             expect(scope.message).toEqual("");
             expect(scope.name).toEqual("");
         });
 
-        describe('given a subject is encoded in the current route', function() {
-            beforeEach(inject(function($routeParams) {
+        describe('given a subject is encoded in the current route', function () {
+            beforeEach(inject(function ($routeParams) {
                 $routeParams.subject = 'subject';
             }));
 
-            describe('at construction time', function() {
+            describe('at construction time', function () {
                 beforeEach(inject(createController));
 
-                it('then pre-fill subject', inject(function($routeParams) {
+                it('then pre-fill subject', inject(function ($routeParams) {
                     expect(scope.subject).toEqual($routeParams.subject);
                     expect(scope.mail.subject).toEqual($routeParams.subject);
                 }));
@@ -72,34 +77,35 @@ describe('contact-us', function () {
             });
         });
 
-        describe('on submit', function() {
-            beforeEach(function() {
+        describe('on submit', function () {
+            beforeEach(function () {
                 scope.replyTo = 'dummy@thinkerit.be';
                 scope.subject = 'subject';
                 scope.message = 'message';
                 scope.name = 'name';
             });
 
-            describe('without config', function() {
-                beforeEach(function() {
-                    $httpBackend.expect('POST', 'api/contact/us', {
-                        replyTo:scope.replyTo,
-                        subject:scope.name + ': ' + scope.subject,
-                        message:scope.message,
-                        locale:'locale'
-                    }).respond(201, '');
-
+            describe('without config', function () {
+                beforeEach(function () {
                     scope.submit();
                 });
 
-                it('enter sending state', function() {
-                    expect(scope.sending).toEqual(true);
-                    $httpBackend.flush();
+                it('has been called with correct params', function () {
+                    expect(gateway.submitContactForm).toHaveBeenCalledWith(
+                        {
+                            replyTo: scope.replyTo,
+                            subject: scope.name + ': ' + scope.subject,
+                            message: scope.message,
+                            locale: 'locale'
+                        }, callbacks);
                 });
 
-                it('reset form', function() {
-                    $httpBackend.flush();
+                it('enter sending state', function () {
+                    expect(scope.sending).toEqual(true);
+                });
 
+                it('reset form', function () {
+                    gateway.submitContactForm.calls.first().args[1].success();
                     expect(scope.sending).toEqual(false);
                     expect(scope.sent).toEqual(true);
                     expect(scope.replyTo).toEqual("");
@@ -116,27 +122,25 @@ describe('contact-us', function () {
                 });
 
                 describe('without mail context', function () {
-                    it('with all params', function() {
-                        $httpBackend.expect('POST', config.baseUri + 'api/contact/us', {
-                            replyTo:scope.replyTo,
-                            subject:scope.name + ': ' + scope.subject,
-                            message:scope.message,
-                            namespace:config.namespace,
-                            locale:'locale'
-                        }).respond(201, '');
+                    it('with all params', function () {
 
                         scope.submit();
-
-                        $httpBackend.flush();
+                        expect(gateway.submitContactForm).toHaveBeenCalledWith({
+                            replyTo: scope.replyTo,
+                            subject: scope.name + ': ' + scope.subject,
+                            message: scope.message,
+                            namespace: config.namespace,
+                            locale: 'locale'
+                        }, callbacks);
                     });
                 });
 
                 describe('with mail context', function () {
                     beforeEach(function () {
-                        scope.init({useMailContext:true});
+                        scope.init({useMailContext: true});
                     });
 
-                    it('with all params', function() {
+                    it('with all params', function () {
                         scope.mail = {
                             replyTo: 'dummy@thinkerit.be',
                             subject: 'subject',
@@ -144,72 +148,67 @@ describe('contact-us', function () {
                             name: 'name'
                         };
 
-                        $httpBackend.expect('POST', config.baseUri + 'api/contact/us', {
-                            subject:scope.mail.name + ': ' + scope.mail.subject,
-                            originalSubject: scope.mail.subject,
-                            replyTo:scope.mail.replyTo,
-                            message:scope.mail.message,
-                            name:scope.mail.name,
-                            namespace:config.namespace,
-                            locale:'locale',
+                        scope.submit();
+                        expect(gateway.submitContactForm).toHaveBeenCalledWith({
+                            subject:  scope.mail.subject,
+                            originalSubject: 'subject',
+                            replyTo: scope.mail.replyTo,
+                            message: scope.mail.message,
+                            name: scope.mail.name,
+                            namespace: config.namespace,
+                            locale: 'locale',
                             location: {
                                 host: 'server',
                                 absUrl: 'http://server/'
                             }
-                        }).respond(201, '');
+                        }, callbacks);
 
-                        scope.submit();
-
-                        $httpBackend.flush();
                     });
 
-                    it('without subject', function() {
+                    it('without subject', function () {
                         scope.mail = {
                             replyTo: 'dummy@thinkerit.be',
                             message: 'without subject',
                             name: 'name'
                         };
 
-                        $httpBackend.expect('POST', config.baseUri + 'api/contact/us', {
-                            replyTo:scope.mail.replyTo,
-                            message:scope.mail.message,
-                            name:scope.mail.name,
-                            namespace:config.namespace,
-                            locale:'locale',
+                        scope.submit();
+                        expect(gateway.submitContactForm).toHaveBeenCalledWith({
+                            replyTo: scope.mail.replyTo,
+                            message: scope.mail.message,
+                            name: scope.mail.name,
+                            namespace: config.namespace,
+                            originalSubject: undefined,
+                            locale: 'locale',
                             location: {
                                 host: 'server',
                                 absUrl: 'http://server/'
                             }
-                        }).respond(201, '');
+                        }, callbacks);
 
-                        scope.submit();
-
-                        $httpBackend.flush();
                     });
 
-                    it('without name', function() {
+                    it('without name', function () {
                         scope.mail = {
                             replyTo: 'dummy@thinkerit.be',
                             subject: 'subject',
                             message: 'message'
                         };
 
-                        $httpBackend.expect('POST', config.baseUri + 'api/contact/us', {
-                            subject:'subject',
+                        scope.submit();
+
+                        expect(gateway.submitContactForm).toHaveBeenCalledWith({
+                            subject: 'subject',
                             originalSubject: 'subject',
-                            replyTo:scope.mail.replyTo,
-                            message:scope.mail.message,
-                            namespace:config.namespace,
-                            locale:'locale',
+                            replyTo: scope.mail.replyTo,
+                            message: scope.mail.message,
+                            namespace: config.namespace,
+                            locale: 'locale',
                             location: {
                                 host: 'server',
                                 absUrl: 'http://server/'
                             }
-                        }).respond(201, '');
-
-                        scope.submit();
-
-                        $httpBackend.flush();
+                        }, callbacks);
                     });
 
                     it('location information is sent', function () {
@@ -218,62 +217,58 @@ describe('contact-us', function () {
                             message: 'message'
                         };
 
-                        $httpBackend.expect('POST', config.baseUri + 'api/contact/us', {
-                            replyTo:scope.mail.replyTo,
-                            message:scope.mail.message,
-                            namespace:config.namespace,
-                            locale:'locale',
+                        scope.submit();
+
+                        expect(gateway.submitContactForm).toHaveBeenCalledWith({
+                            replyTo: scope.mail.replyTo,
+                            message: scope.mail.message,
+                            namespace: config.namespace,
+                            locale: 'locale',
+                            originalSubject: undefined,
                             location: {
                                 host: 'server',
                                 absUrl: 'http://server/'
                             }
-                        }).respond(201, '');
-
-                        scope.submit();
-
-                        $httpBackend.flush();
+                        }, callbacks);
                     });
 
                     it('with dynamic content', function () {
                         scope.mail = {
                             dynamic: 'foo'
                         };
+                        scope.submit();
 
-                        $httpBackend.expect('POST', config.baseUri + 'api/contact/us', {
+                        expect(gateway.submitContactForm).toHaveBeenCalledWith({
                             dynamic: 'foo',
-                            namespace:config.namespace,
-                            locale:'locale',
+                            namespace: config.namespace,
+                            locale: 'locale',
+                            originalSubject: undefined,
                             location: {
                                 host: 'server',
                                 absUrl: 'http://server/'
                             }
-                        }).respond(201, '');
-
-                        scope.submit();
-
-                        $httpBackend.flush();
+                        }, callbacks)
                     });
                 });
             });
         });
 
-        it('on submit without name', function() {
+        it('on submit without name', function () {
             scope.replyTo = 'dummy@thinkerit.be';
             scope.subject = 'subject';
             scope.message = 'message';
-
-            $httpBackend.expect('POST', 'api/contact/us', {
-                replyTo:scope.replyTo,
-                subject:scope.subject,
-                message:scope.message,
-                locale:'locale'
-            }).respond(201, '');
-
             scope.submit();
+
+            expect(gateway.submitContactForm).toHaveBeenCalledWith({
+                replyTo: scope.replyTo,
+                subject: scope.subject,
+                message: scope.message,
+                locale: 'locale'
+            }, callbacks);
 
             expect(scope.sending).toEqual(true);
 
-            $httpBackend.flush();
+            gateway.submitContactForm.calls.first().args[1].success();
 
             expect(scope.sending).toEqual(false);
             expect(scope.sent).toEqual(true);
@@ -287,28 +282,27 @@ describe('contact-us', function () {
             var success = function () {
                 successHandlerExecuted = true;
             };
-            scope.init({success:success});
-            $httpBackend.expect('POST', /.*/).respond(201);
+            scope.init({success: success});
             scope.submit();
-            $httpBackend.flush();
+            gateway.submitContactForm.calls.first().args[1].success();
 
             expect(successHandlerExecuted).toEqual(true);
         });
 
-        it('on submit success raise system.success notification', function() {
-            $httpBackend.expect('POST', /.*/).respond(201);
+        it('on submit success raise system.success notification', function () {
             scope.submit();
-            $httpBackend.flush();
+            gateway.submitContactForm.calls.first().args[1].success();
+
             expect(dispatcher['system.success']).toEqual({
-                code:'contact.us.sent',
-                default:'Your message was delivered successfully, thank you.'
+                code: 'contact.us.sent',
+                default: 'Your message was delivered successfully, thank you.'
             });
         });
 
-        it('on submit success raise contact.us.submit.success notification', function() {
-            $httpBackend.expect('POST', /.*/).respond(201);
+        it('on submit success raise contact.us.submit.success notification', function () {
             scope.submit();
-            $httpBackend.flush();
+            gateway.submitContactForm.calls.first().args[1].success();
+
             expect(dispatcher['contact.us.submit.success']).toEqual('');
         });
 
@@ -321,47 +315,45 @@ describe('contact-us', function () {
             });
 
             it('do not send success notifications', function () {
-                $httpBackend.expect('POST', /.*/).respond(201);
                 scope.submit();
-                $httpBackend.flush();
+                gateway.submitContactForm.calls.first().args[1].success();
+
                 expect(dispatcher['system.success']).toBeUndefined();
                 expect(dispatcher['contact.us.submit.success']).toBeUndefined();
             });
         });
 
-        it('on submit error raise system.alert notification', function() {
-            $httpBackend.expect('POST', /.*/).respond(500);
+        it('on submit error raise system.alert notification', function () {
             scope.submit();
-            $httpBackend.flush();
+            gateway.submitContactForm.calls.first().args[1].rejected({}, 500);
             expect(dispatcher['system.alert']).toEqual(500);
         });
 
-        it('empty error class', function() {
+        it('empty error class', function () {
             expect(scope.errorClassFor('field')).toEqual('')
         });
 
-        it('on submit rejected', function() {
-            $httpBackend.when('POST', /.*/).respond(412, {field:['violation']});
+        it('on submit rejected', function () {
             scope.submit();
 
             expect(scope.sending).toEqual(true);
-
-            $httpBackend.flush();
+            gateway.submitContactForm.calls.first().args[1].rejected({field: ['violation']}, 412);
 
             expect(scope.sending).toEqual(false);
             expect(scope.errorClassFor('field')).toEqual('error');
             expect(scope.violations('field')).toEqual(['violation']);
         });
 
-        it('submit resets errors', function() {
-            $httpBackend.when('POST', /.*/).respond(201, '');
-            ctrl.errors = {field:['error']};
+        it('submit resets errors', function () {
+            ctrl.errors = {field: ['error']};
+
             scope.submit();
-            $httpBackend.flush();
+
+            gateway.submitContactForm.calls.first().args[1].success();
             expect(scope.errorClassFor('field')).toEqual('');
         });
 
-        it('confirm mail sent', function() {
+        it('confirm mail sent', function () {
             scope.sent = true;
             scope.confirm();
             expect(scope.sent).toEqual(false);

@@ -1,7 +1,8 @@
 (function () {
-    angular.module('contact.us', ['ngRoute', 'notifications', 'config', 'checkpoint'])
-        .factory('submitContactUsMessage', ['$http', function($http) {
-            return SubmitContactUsMessageFactory($http);
+
+    angular.module('contact.us', ['ngRoute', 'notifications', 'config', 'checkpoint', 'binarta-applicationjs-angular1'])
+        .factory('submitContactUsMessage', ['binarta', function (binarta) {
+            return SubmitContactUsMessageFactory(binarta);
         }])
         .controller('ContactUsController', ['$scope', '$routeParams', '$location', 'submitContactUsMessage', 'topicMessageDispatcher', 'config', 'localeResolver', 'fetchAccountMetadata', 'activeUserHasPermission', ContactUsController])
         .config(['$routeProvider', function ($routeProvider) {
@@ -12,20 +13,10 @@
                 .when('/:locale/contact/:subject', {templateUrl: 'partials/contact.html', title: 'Contact Us'});
         }]);
 
-    function SubmitContactUsMessageFactory($http) {
-        return function(uri, data) {
-            var promise = $http.post(uri, data);
-            var wrapper = {
-                success: function (cb) {
-                    promise.success(cb);
-                    return wrapper;
-                },
-                error: function (cb) {
-                    promise.error(cb);
-                    return wrapper;
-                }
-            };
-            return wrapper;
+
+    function SubmitContactUsMessageFactory(binarta) {
+        return function (data, response) {
+            binarta.application.gateway.submitContactForm(data, response);
         }
     }
 
@@ -34,11 +25,11 @@
         this.errors = {};
         this.mailConfig = {};
 
-        $scope.init = function(mailConfig) {
+        $scope.init = function (mailConfig) {
             self.mailConfig = mailConfig;
         };
 
-        var reset = function() {
+        var reset = function () {
             $scope.replyTo = '';
             $scope.subject = '';
             $scope.message = '';
@@ -46,32 +37,32 @@
             $scope.mail = {};
         };
 
-        var onSuccess = function() {
+        var onSuccess = function () {
             $scope.sent = true;
             $scope.sending = false;
             reset();
-            if(self.mailConfig.success) self.mailConfig.success();
+            if (self.mailConfig.success) self.mailConfig.success();
             if (self.mailConfig.successNotification != false) {
                 topicMessageDispatcher.fire('system.success', {
-                    code:'contact.us.sent',
-                    default:'Your message was delivered successfully, thank you.'
+                    code: 'contact.us.sent',
+                    default: 'Your message was delivered successfully, thank you.'
                 });
-                topicMessageDispatcher.fire('contact.us.submit.success','');
+                topicMessageDispatcher.fire('contact.us.submit.success', '');
             }
         };
 
-        var onError = function(body, status) {
+        var onError = function (body, status) {
             $scope.sending = false;
-            if(status == 412) self.errors = body;
-            else topicMessageDispatcher.fire('system.alert', status);
+            if (status == 412) self.errors = body;
+            topicMessageDispatcher.fire('system.alert', status);
         };
 
-        $scope.submit = function() {
+        $scope.submit = function () {
             self.errors = {};
             $scope.sending = true;
 
             var data = {};
-            if(self.mailConfig.useMailContext && $scope.mail) {
+            if (self.mailConfig.useMailContext && $scope.mail) {
                 data = $scope.mail;
                 data.originalSubject = data.subject;
                 if (data.subject && data.name) {
@@ -87,28 +78,28 @@
                     message: $scope.message
                 };
                 if ($scope.subject && $scope.name) data.subject = $scope.name + ': ' + $scope.subject;
-                else if($scope.subject && !$scope.name) data.subject = $scope.subject;
-                else if(!$scope.subject && $scope.name) data.subject = $scope.name;
+                else if ($scope.subject && !$scope.name) data.subject = $scope.subject;
+                else if (!$scope.subject && $scope.name) data.subject = $scope.name;
             }
 
-            if(config.namespace) data.namespace = config.namespace;
+            if (config.namespace) data.namespace = config.namespace;
             data.locale = localeResolver();
-            submitContactUsMessage((config.baseUri || '') + 'api/contact/us', data).success(onSuccess).error(onError);
+            submitContactUsMessage(data, {success: onSuccess, rejected: onError});
         };
 
-        $scope.confirm = function() {
+        $scope.confirm = function () {
             $scope.sent = false;
         };
 
-        $scope.errorClassFor = function(key) {
+        $scope.errorClassFor = function (key) {
             return self.errors[key] ? 'error' : '';
         };
 
-        $scope.violations = function(key) {
+        $scope.violations = function (key) {
             return self.errors[key];
         };
 
-        this.getScope = function() {
+        this.getScope = function () {
             return $scope;
         };
 
