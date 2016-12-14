@@ -1,9 +1,9 @@
 (function () {
-    angular.module('contact.us', ['ngRoute', 'notifications', 'config', 'checkpoint', 'binarta-applicationjs-angular1'])
+    angular.module('contact.us', ['ngRoute', 'notifications', 'config', 'binarta-checkpointjs-angular1', 'binarta-applicationjs-angular1'])
         .factory('submitContactUsMessage', ['binarta', function (binarta) {
             return SubmitContactUsMessageFactory(binarta);
         }])
-        .controller('ContactUsController', ['$scope', '$routeParams', '$location', 'submitContactUsMessage', 'topicMessageDispatcher', 'config', 'localeResolver', 'fetchAccountMetadata', 'activeUserHasPermission', ContactUsController])
+        .controller('ContactUsController', ['$scope', '$routeParams', '$location', 'submitContactUsMessage', 'topicMessageDispatcher', 'config', 'localeResolver', 'binarta', ContactUsController])
         .config(['$routeProvider', function ($routeProvider) {
             $routeProvider
                 .when('/contact', {templateUrl: 'partials/contact.html', title: 'Contact Us'})
@@ -12,17 +12,17 @@
                 .when('/:locale/contact/:subject', {templateUrl: 'partials/contact.html', title: 'Contact Us'});
         }]);
 
-
     function SubmitContactUsMessageFactory(binarta) {
         return function (data, response) {
             binarta.application.gateway.submitContactForm(data, response);
         }
     }
 
-    function ContactUsController($scope, $routeParams, $location, submitContactUsMessage, topicMessageDispatcher, config, localeResolver, fetchAccountMetadata, activeUserHasPermission) {
+    function ContactUsController($scope, $routeParams, $location, submitContactUsMessage, topicMessageDispatcher, config, localeResolver, binarta) {
         var self = this;
         this.errors = {};
         this.mailConfig = {};
+        var profile = binarta.checkpoint.profile;
 
         $scope.init = function (mailConfig) {
             self.mailConfig = mailConfig;
@@ -110,18 +110,23 @@
         $scope.subject = extractSubjectFromRouteOrEmpty();
         $scope.mail.subject = extractSubjectFromRouteOrEmpty();
 
-        fetchAccountMetadata({
-            ok: function (metadata) {
-                activeUserHasPermission({
-                    no: function () {
-                        if (metadata.email) {
-                            $scope.replyTo = metadata.email;
-                            $scope.mail.replyTo = metadata.email;
-                        }
-                    },
-                    scope: $scope
-                }, 'edit.mode');
-            }
+
+        var profileObserver = profile.eventRegistry.observe({
+            signedin: prefillReplyToFromAccount
         });
+
+        function prefillReplyToFromAccount() {
+            if (!profile.hasPermission('edit.mode')) {
+                var metadata = profile.metadata();
+                if (metadata.email) {
+                    if (!$scope.replyTo) $scope.replyTo = metadata.email;
+                    if (!$scope.mail.replyTo) $scope.mail.replyTo = metadata.email;
+                }
+            }
+        }
+
+        prefillReplyToFromAccount();
+
+        $scope.$on('$destroy', profileObserver.disconnect);
     }
 })();

@@ -4,7 +4,6 @@ describe('contact-us', function () {
     var scope, dispatcher, config, localeResolver, $location, binarta, gateway, callbacks;
 
     beforeEach(module('contact.us'));
-    beforeEach(module('binartajs-angular1-spec'));
     beforeEach(inject(function ($rootScope, _$location_, _binarta_) {
         localeResolver = jasmine.createSpy('localeResolver');
         localeResolver.and.returnValue('locale');
@@ -20,6 +19,7 @@ describe('contact-us', function () {
         gateway = binarta.application.gateway;
         spyOn(gateway, 'submitContactForm');
         callbacks = {success: jasmine.any(Function), rejected: jasmine.any(Function)};
+        binarta.checkpoint.gateway.permissions = [];
     }));
 
     describe('ContactUsController', function () {
@@ -59,18 +59,53 @@ describe('contact-us', function () {
         });
 
         describe('given that the user is logged in', function () {
-            beforeEach(inject(function (fetchAccountMetadata) {
-                fetchAccountMetadata.calls.first().args[0].ok({
-                    email: 'email'
-                });
-            }));
+            beforeEach(function () {
+                binarta.checkpoint.registrationForm.submit({username: 'u', password: 'p', email: 'e'});
+            });
 
-            describe('and the user has no edit.mode permission', function () {
-                beforeEach(inject(function (activeUserHasPermission) {
-                    activeUserHasPermission.calls.first().args[0].no();
-                }));
+            it('then pre-fill replyTo', function () {
+                expect(scope.replyTo).toEqual('e');
+                expect(scope.mail.replyTo).toEqual('e');
+            });
+
+            describe('at construction time', function () {
+                beforeEach(inject(createController));
 
                 it('then pre-fill replyTo', function () {
+                    expect(scope.replyTo).toEqual('e');
+                    expect(scope.mail.replyTo).toEqual('e');
+                });
+            });
+        });
+
+        describe('given that the user is logged in with edit.mode permission', function () {
+            beforeEach(function () {
+                binarta.checkpoint.gateway.addPermission('edit.mode');
+                binarta.checkpoint.registrationForm.submit({username: 'u', password: 'p', email: 'e'});
+            });
+
+            describe('at construction time', function () {
+                beforeEach(inject(createController));
+
+                it('don not pre-fill replyTo', function () {
+                    expect(scope.replyTo).toEqual('');
+                    expect(scope.mail.replyTo).toBeUndefined();
+                });
+            });
+        });
+
+        describe('with previous replyTo value', function () {
+            beforeEach(function () {
+                scope.replyTo = 'email';
+                scope.mail.replyTo = 'email';
+            });
+
+            describe('and user is logged in', function () {
+                beforeEach(function () {
+                    binarta.checkpoint.registrationForm.submit({username: 'u', password: 'p', email: 'e'});
+                });
+
+                it('do not update replyTo', function () {
                     expect(scope.replyTo).toEqual('email');
                     expect(scope.mail.replyTo).toEqual('email');
                 });
@@ -291,7 +326,6 @@ describe('contact-us', function () {
             expect(dispatcher['contact.us.submit.success']).toEqual('');
         });
 
-
         describe('when initialized with successNotification flag disabled', function () {
             beforeEach(function () {
                 scope.init({
@@ -338,6 +372,23 @@ describe('contact-us', function () {
             scope.sent = true;
             scope.confirm();
             expect(scope.sent).toEqual(false);
+        });
+
+        describe('on destroy', function () {
+            beforeEach(function () {
+                scope.$destroy();
+            });
+
+            describe('on signin', function () {
+                beforeEach(function () {
+                    binarta.checkpoint.registrationForm.submit({username: 'u', password: 'p', email: 'e'});
+                });
+
+                it('do not pre-fill replyTo', function () {
+                    expect(scope.replyTo).toEqual('');
+                    expect(scope.mail.replyTo).toBeUndefined();
+                });
+            });
         });
     });
 });
