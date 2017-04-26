@@ -29,9 +29,9 @@
       "contact.us.mail.email.label": "E-mail:",
       "contact.us.mail.from.label": "De:",
       "contact.us.mail.subject.label": "Sujet:",
-      "contact.us.mail.order.number.label": "Order #:",
-      "contact.us.mail.order.view.link": "View order details",
-      "contact.us.mail.message.send.from": "This message was sent from"
+      "contact.us.mail.order.number.label": "Commande #:",
+      "contact.us.mail.order.view.link": "Voir les détails de la commande",
+      "contact.us.mail.message.send.from": "Ce message a été envoyé par"
     },
     "de":{
       "contact.us.sent": "Vielen Dank. Ihr Bericht wurde erfolgreich gesendet.",
