@@ -359,6 +359,7 @@ describe('contact-us', function () {
             expect(scope.sending).toEqual(false);
             expect(scope.errorClassFor('field')).toEqual('error');
             expect(scope.violations('field')).toEqual(['violation']);
+            expect(dispatcher['system.alert']).toBeUndefined();
         });
 
         it('submit resets errors', function () {

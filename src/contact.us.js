@@ -41,7 +41,7 @@
             $scope.sending = false;
             reset();
             if (self.mailConfig.success) self.mailConfig.success();
-            if (self.mailConfig.successNotification != false) {
+            if (self.mailConfig.successNotification !== false) {
                 topicMessageDispatcher.fire('system.success', {
                     code: 'contact.us.sent',
                     default: 'Your message was delivered successfully, thank you.'
@@ -52,8 +52,8 @@
 
         var onError = function (body, status) {
             $scope.sending = false;
-            if (status == 412) self.errors = body;
-            topicMessageDispatcher.fire('system.alert', status);
+            if (status === 412) self.errors = body;
+            else topicMessageDispatcher.fire('system.alert', status);
         };
 
         $scope.submit = function () {
