@@ -1,5 +1,6 @@
 {
   "default": {
-    "contact.us": "bower_components/binarta.contact.us.angular/src/contact.us.js"
+    "contact.us": "bower_components/binarta.contact.us.angular/src/contact.us.js",
+    "contact.us.templates": "bower_components/binarta.contact.us.angular/src/contact-us-tpls-bootstrap3.js"
   }
 }

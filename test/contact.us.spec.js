@@ -1,5 +1,3 @@
-angular.module('config', []);
-
 describe('contact-us', function () {
     var scope, dispatcher, config, localeResolver, $location, binarta, gateway, callbacks;
 
@@ -390,6 +388,316 @@ describe('contact-us', function () {
                     expect(scope.mail.replyTo).toBeUndefined();
                 });
             });
+        });
+    });
+
+    describe('binContactForm component', function () {
+        var $ctrl, namespace, locale, dispatcher;
+
+        beforeEach(inject(function ($componentController, config, topicMessageDispatcherMock) {
+            namespace = 'namespace';
+            locale = 'L';
+            config.namespace = namespace;
+            dispatcher = topicMessageDispatcherMock;
+            binarta.application.setLocale(locale);
+            $ctrl = $componentController('binContactForm');
+        }));
+
+        describe('on init', function () {
+            beforeEach(function () {
+                $ctrl.$onInit();
+            });
+
+            it('empty data object', function () {
+                expect($ctrl.data).toEqual({});
+            });
+
+            it('empty violations object', function () {
+                expect($ctrl.violations).toEqual({});
+            });
+
+            it('is not sending', function () {
+                expect($ctrl.sending).toBeFalsy();
+            });
+
+            describe('on submit with no fields', function () {
+                beforeEach(function () {
+                    $ctrl.submit();
+                });
+
+                it('gateway been called with correct params', function () {
+                    expect(gateway.submitContactForm).toHaveBeenCalledWith(
+                        {
+                            locale: locale,
+                            namespace: namespace,
+                            location: {
+                                host: 'server',
+                                absUrl: 'http://server/'
+                            }
+                        }, callbacks);
+                });
+            });
+
+            describe('on submit with fields', function () {
+                beforeEach(function () {
+                    $ctrl.data.replyTo = 'email';
+                    $ctrl.data.name = 'name';
+                    $ctrl.data.subject = 'subject';
+                    $ctrl.data.message = 'message';
+                    $ctrl.submit();
+                });
+
+                it('is sending', function () {
+                    expect($ctrl.sending).toBeTruthy();
+                });
+
+                it('gateway been called with correct params', function () {
+                    expect(gateway.submitContactForm).toHaveBeenCalledWith(
+                        {
+                            replyTo: 'email',
+                            name: 'name',
+                            message: 'message',
+                            originalSubject: 'subject',
+                            subject: 'name: subject',
+                            locale: locale,
+                            namespace: namespace,
+                            location: {
+                                host: 'server',
+                                absUrl: 'http://server/'
+                            }
+                        }, callbacks);
+                });
+
+                describe('on submit error with server error', function () {
+                    var violations;
+
+                    beforeEach(function () {
+                        violations = 'violations';
+                        gateway.submitContactForm.calls.mostRecent().args[1].rejected(violations, 500);
+                    });
+
+                    it('is not sending', function () {
+                        expect($ctrl.sending).toBeFalsy();
+                    });
+
+                    it('fire system alert', function () {
+                        expect(dispatcher['system.alert']).toEqual(500);
+                    });
+                });
+
+                describe('on submit error with precondition failed', function () {
+                    var violations;
+
+                    beforeEach(function () {
+                        violations = 'violations';
+                        gateway.submitContactForm.calls.mostRecent().args[1].rejected(violations, 412);
+                    });
+
+                    it('is not sending', function () {
+                        expect($ctrl.sending).toBeFalsy();
+                    });
+
+                    it('violations are available', function () {
+                        expect($ctrl.violations).toEqual(violations);
+                    });
+
+                    describe('on submit success', function () {
+                        var dataRef;
+
+                        beforeEach(function () {
+                            dataRef = $ctrl.data;
+                            gateway.submitContactForm.calls.mostRecent().args[1].success();
+                        });
+
+                        it('is not sending', function () {
+                            expect($ctrl.sending).toBeFalsy();
+                        });
+
+                        it('violations are cleared', function () {
+                            expect($ctrl.violations).toEqual({});
+                        });
+
+                        it('data is cleared', function () {
+                            expect($ctrl.data).toEqual({});
+                        });
+
+                        it('data reference is not changed', function () {
+                            expect($ctrl.data).toBe(dataRef);
+                        });
+
+                        it('success notification is fired', function () {
+                            expect(dispatcher['system.success']).toEqual({code: 'contact.us.sent'});
+                        });
+                    });
+
+                    describe('on submit success and success notification is disabled', function () {
+                        beforeEach(function () {
+                            $ctrl.successNotification = 'false';
+                            gateway.submitContactForm.calls.mostRecent().args[1].success();
+                        });
+
+                        it('success notification is not fired', function () {
+                            expect(dispatcher['system.success']).toBeUndefined();
+                        });
+                    });
+
+                    describe('on submit success with onSent callback', function () {
+                        beforeEach(function () {
+                            $ctrl.onSent = jasmine.createSpy('spy');
+                            gateway.submitContactForm.calls.mostRecent().args[1].success();
+                        });
+
+                        it('callback is executed', function () {
+                            expect($ctrl.onSent).toHaveBeenCalled();
+                        });
+                    });
+                });
+            });
+        });
+
+        describe('when subject is defined in route params', function () {
+            beforeEach(inject(function ($routeParams) {
+                $routeParams.subject = 'subject';
+                $ctrl.$onInit();
+            }));
+
+            it('subject from route params is set', function () {
+                expect($ctrl.data.subject).toEqual('subject');
+            });
+        });
+
+        describe('given that the user is logged in', function () {
+            beforeEach(function () {
+                binarta.checkpoint.registrationForm.submit({username: 'u', password: 'p', email: 'e'});
+            });
+
+            describe('on init', function () {
+                beforeEach(function () {
+                    $ctrl.$onInit();
+                });
+
+                it('pre-fill replyTo', function () {
+                    expect($ctrl.data.replyTo).toEqual('e');
+                });
+            });
+        });
+
+        describe('given that the user is logged in with edit.mode permission', function () {
+            beforeEach(function () {
+                binarta.checkpoint.gateway.addPermission('edit.mode');
+                binarta.checkpoint.registrationForm.submit({username: 'u', password: 'p', email: 'e'});
+            });
+
+            describe('on init', function () {
+                beforeEach(function () {
+                    $ctrl.$onInit();
+                });
+
+                it('don not pre-fill replyTo', function () {
+                    expect($ctrl.data.replyTo).toBeUndefined();
+                });
+            });
+        });
+
+        describe('with previous replyTo value', function () {
+            beforeEach(function () {
+                $ctrl.$onInit();
+                $ctrl.data.replyTo = 'email';
+            });
+
+            describe('and user is logged in', function () {
+                beforeEach(function () {
+                    binarta.checkpoint.registrationForm.submit({username: 'u', password: 'p', email: 'e'});
+                });
+
+                it('do not update replyTo', function () {
+                    expect($ctrl.data.replyTo).toEqual('email');
+                });
+            });
+        });
+
+        describe('on destroy', function () {
+            beforeEach(function () {
+                $ctrl.$onInit();
+                $ctrl.$onDestroy();
+            });
+
+            describe('on signin', function () {
+                beforeEach(function () {
+                    binarta.checkpoint.registrationForm.submit({username: 'u', password: 'p', email: 'e'});
+                });
+
+                it('do not pre-fill replyTo', function () {
+                    expect($ctrl.data.replyTo).toBeUndefined();
+                });
+            });
+        });
+    });
+
+    describe('binContactFormField component', function () {
+        var $ctrl;
+
+        beforeEach(inject(function ($componentController) {
+            $ctrl = $componentController('binContactFormField');
+            $ctrl.formCtrl = {
+                data: 'data'
+            };
+            $ctrl.fieldName = 'name';
+            $ctrl.$onInit();
+        }));
+
+        it('data reference is set', function () {
+            expect($ctrl.data).toBe($ctrl.formCtrl.data);
+        });
+
+        it('field id is set', function () {
+            expect($ctrl.fieldId).toEqual('binContactForm-' + $ctrl.fieldName);
+        });
+
+        it('when form is sending', function () {
+            $ctrl.formCtrl.sending = true;
+            expect($ctrl.isSending()).toBeTruthy();
+        });
+
+        it('when form is not sending', function () {
+            $ctrl.formCtrl.sending = false;
+            expect($ctrl.isSending()).toBeFalsy();
+        });
+
+        describe('when field is invalid', function () {
+            beforeEach(function () {
+                $ctrl.formCtrl.violations = {
+                    name: ['error']
+                };
+            });
+
+            it('is invalid', function () {
+                expect($ctrl.isInvalid()).toBeTruthy();
+            });
+
+            it('get violation code', function () {
+                expect($ctrl.getViolation()).toEqual('error');
+            });
+        });
+    });
+
+    describe('binContactFormSubmit component', function () {
+        var $ctrl;
+
+        beforeEach(inject(function ($componentController) {
+            $ctrl = $componentController('binContactFormSubmit');
+            $ctrl.formCtrl = {};
+            $ctrl.$onInit();
+        }));
+
+        it('when form is sending', function () {
+            $ctrl.formCtrl.sending = true;
+            expect($ctrl.isSending()).toBeTruthy();
+        });
+
+        it('when form is not sending', function () {
+            $ctrl.formCtrl.sending = false;
+            expect($ctrl.isSending()).toBeFalsy();
         });
     });
 });

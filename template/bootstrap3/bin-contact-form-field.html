@@ -1,0 +1,16 @@
+<div class="form-group" ng-class="{'has-error': $ctrl.isInvalid()}" ng-switch="$ctrl.fieldType">
+    <label class="control-label" for="{{::$ctrl.fieldId}}"
+           i18n code="{{::'contact.form.' + $ctrl.fieldName}}" ng-bind="var">
+    </label>
+
+    <textarea class="form-control" rows="6" id="{{::$ctrl.fieldId}}" name="{{::$ctrl.fieldId}}"
+              ng-model="$ctrl.data[$ctrl.fieldName]" ng-disabled="$ctrl.isSending()" ng-switch-when="textarea"></textarea>
+
+    <input type="{{::$ctrl.fieldType}}" id="{{::$ctrl.fieldId}}" name="{{::$ctrl.fieldId}}" class="form-control"
+           ng-model="$ctrl.data[$ctrl.fieldName]" ng-disabled="$ctrl.isSending()" ng-switch-default>
+
+    <small class="help-block" ng-if="$ctrl.isInvalid()">
+        <i class="fa fa-exclamation-triangle fa-fw"></i>
+        <span i18n code="{{'contact.form.field.' + $ctrl.getViolation()}}" default="Invalid" read-only ng-bind="::var"></span>
+    </small>
+</div>

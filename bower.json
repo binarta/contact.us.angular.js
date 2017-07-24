@@ -9,7 +9,7 @@
     "binarta.basic.app.angular": "0.*.*"
   },
   "devDependencies": {
-    "angular-mocks": "1.*.*",
+    "angular-mocks": "1.5.*",
     "thk-rest-client-mock": "0.*.*",
     "thk-notifications-mock": "0.*.*"
   },
