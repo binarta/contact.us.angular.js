@@ -1,0 +1,32 @@
+{
+  "msgs": {
+    "nl": {
+      "contact.form.name": "Naam",
+      "contact.form.replyTo": "E-mail",
+      "contact.form.subject": "Onderwerp",
+      "contact.form.message": "Bericht",
+      "contact.form.submit": "Verzenden"
+    },
+    "en": {
+      "contact.form.name": "Name",
+      "contact.form.replyTo": "Email",
+      "contact.form.subject": "Subject",
+      "contact.form.message": "Message",
+      "contact.form.submit": "Send"
+    },
+    "fr": {
+      "contact.form.name": "Nom",
+      "contact.form.replyTo": "E-mail",
+      "contact.form.subject": "Sujet",
+      "contact.form.message": "Message",
+      "contact.form.submit": "Envoyer"
+    },
+    "de": {
+      "contact.form.name": "Name",
+      "contact.form.replyTo": "Email",
+      "contact.form.subject": "Subject",
+      "contact.form.message": "Message",
+      "contact.form.submit": "Send"
+    }
+  }
+}

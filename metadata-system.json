@@ -9,7 +9,10 @@
       "contact.us.mail.subject.label": "Onderwerp:",
       "contact.us.mail.order.number.label": "Bestel #:",
       "contact.us.mail.order.view.link": "Bekijk bestel details",
-      "contact.us.mail.message.send.from": "Dit bericht is verzonden vanaf"
+      "contact.us.mail.message.send.from": "Dit bericht is verzonden vanaf",
+      "contact.form.field.required": "Verplicht",
+      "contact.form.field.email": "Ongeldig e-mailadres",
+      "contact.form.field.upperbound": "De opgegeven tekst is te lang"
     },
     "en":{
       "contact.us.sent": "Your message was delivered successfully, thank you.",
@@ -20,7 +23,10 @@
       "contact.us.mail.subject.label": "Subject:",
       "contact.us.mail.order.number.label": "Order #:",
       "contact.us.mail.order.view.link": "View order details",
-      "contact.us.mail.message.send.from": "This message was sent from"
+      "contact.us.mail.message.send.from": "This message was sent from",
+      "contact.form.field.required": "Required",
+      "contact.form.field.email": "Invalid email address",
+      "contact.form.field.upperbound": "The specified text is too long"
     },
     "fr":{
       "contact.us.sent": "Merci, votre message a bien été envoyé.",
@@ -31,7 +37,10 @@
       "contact.us.mail.subject.label": "Sujet:",
       "contact.us.mail.order.number.label": "Commande #:",
       "contact.us.mail.order.view.link": "Voir les détails de la commande",
-      "contact.us.mail.message.send.from": "Ce message a été envoyé par"
+      "contact.us.mail.message.send.from": "Ce message a été envoyé par",
+      "contact.form.field.required": "Obligatoire",
+      "contact.form.field.email": "Invalid email address",
+      "contact.form.field.upperbound": "Le texte spécifié est trop long"
     },
     "de":{
       "contact.us.sent": "Vielen Dank. Ihr Bericht wurde erfolgreich gesendet.",
@@ -42,7 +51,10 @@
       "contact.us.mail.subject.label": "Betrifft:",
       "contact.us.mail.order.number.label": "Order #:",
       "contact.us.mail.order.view.link": "View order details",
-      "contact.us.mail.message.send.from": "This message was sent from"
+      "contact.us.mail.message.send.from": "This message was sent from",
+      "contact.form.field.required": "Required",
+      "contact.form.field.email": "Adresse e-mail non valide",
+      "contact.form.field.upperbound": "The specified text is too long"
     }
   }
 }
