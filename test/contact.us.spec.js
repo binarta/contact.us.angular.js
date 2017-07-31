@@ -640,7 +640,9 @@ describe('contact-us', function () {
         beforeEach(inject(function ($componentController) {
             $ctrl = $componentController('binContactFormField');
             $ctrl.formCtrl = {
-                data: 'data'
+                data: {
+                    name: 'field'
+                }
             };
             $ctrl.fieldName = 'name';
             $ctrl.$onInit();
@@ -677,6 +679,17 @@ describe('contact-us', function () {
 
             it('get violation code', function () {
                 expect($ctrl.getViolation()).toEqual('error');
+            });
+        });
+
+        describe('when value is given', function () {
+            beforeEach(function () {
+                $ctrl.value = 'test';
+                $ctrl.$onChanges();
+            });
+
+            it('data is updated with value', function () {
+                expect($ctrl.data[$ctrl.fieldName]).toEqual('test');
             });
         });
     });

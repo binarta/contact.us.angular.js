@@ -108,7 +108,8 @@
 
         this.bindings = {
             fieldName: '@',
-            fieldType: '@'
+            fieldType: '@',
+            value: '@'
         };
 
         this.controller = [function () {
@@ -128,6 +129,11 @@
                     return $ctrl.formCtrl.sending;
                 };
                 $ctrl.fieldId = 'binContactForm-' + $ctrl.fieldName;
+
+            };
+
+            $ctrl.$onChanges = function () {
+                if ($ctrl.value) $ctrl.data[$ctrl.fieldName] = $ctrl.value;
             };
         }];
     }
