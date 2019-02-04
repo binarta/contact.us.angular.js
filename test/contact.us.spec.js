@@ -129,7 +129,11 @@ describe('contact-us', function () {
                             replyTo: scope.replyTo,
                             subject: scope.name + ': ' + scope.subject,
                             message: scope.message,
-                            locale: 'locale'
+                            locale: 'locale',
+                            location: {
+                                host: 'server',
+                                absUrl: 'http://server/'
+                            }
                         }, callbacks);
                 });
 
@@ -162,7 +166,11 @@ describe('contact-us', function () {
                             subject: scope.name + ': ' + scope.subject,
                             message: scope.message,
                             namespace: config.namespace,
-                            locale: 'locale'
+                            locale: 'locale',
+                            location: {
+                                host: 'server',
+                                absUrl: 'http://server/'
+                            }
                         }, callbacks);
                     });
                 });
@@ -286,7 +294,11 @@ describe('contact-us', function () {
                 replyTo: scope.replyTo,
                 subject: scope.subject,
                 message: scope.message,
-                locale: 'locale'
+                locale: 'locale',
+                location: {
+                    host: 'server',
+                    absUrl: 'http://server/'
+                }
             }, callbacks);
             expect(scope.sending).toEqual(true);
 

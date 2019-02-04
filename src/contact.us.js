@@ -207,10 +207,6 @@
                 if (data.subject && data.name) {
                     data.subject = data.name + ': ' + data.subject;
                 }
-                data.location = {
-                    host: $location.host(),
-                    absUrl: $location.absUrl()
-                };
             } else {
                 data = {
                     replyTo: $scope.replyTo,
@@ -220,6 +216,10 @@
                 else if ($scope.subject && !$scope.name) data.subject = $scope.subject;
                 else if (!$scope.subject && $scope.name) data.subject = $scope.name;
             }
+            data.location = {
+                host: $location.host(),
+                absUrl: $location.absUrl()
+            };
 
             if (config.namespace) data.namespace = config.namespace;
             data.locale = localeResolver();
