@@ -9,5 +9,9 @@
     "gulp-angular-templatecache": "^1.5.0",
     "gulp-minify-html": "^0.1.8",
     "gulp-template": "^3.0.0"
+  },
+  "scripts": {
+    "test": "karma start karma10.conf.js --single-run",
+    "test:watch": "karma start karma10.conf.js"
   }
 }
