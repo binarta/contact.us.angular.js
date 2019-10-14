@@ -404,7 +404,7 @@ describe('contact-us', function () {
     });
 
     describe('binContactForm component', function () {
-        var $ctrl, namespace, locale, dispatcher;
+        var $ctrl, $element, namespace, locale, dispatcher;
 
         beforeEach(inject(function ($componentController, config, topicMessageDispatcherMock) {
             namespace = 'namespace';
@@ -412,7 +412,8 @@ describe('contact-us', function () {
             config.namespace = namespace;
             dispatcher = topicMessageDispatcherMock;
             binarta.application.setLocale(locale);
-            $ctrl = $componentController('binContactForm');
+            $element = jasmine.createSpyObj('$element', ['trigger'])
+            $ctrl = $componentController('binContactForm', {$element: $element});
         }));
 
         describe('on init', function () {
@@ -539,6 +540,10 @@ describe('contact-us', function () {
 
                         it('success notification is fired', function () {
                             expect(dispatcher['system.success']).toEqual({code: 'contact.us.sent'});
+                        });
+
+                        it('fires an element event', function() {
+                            expect($element.trigger).toHaveBeenCalledWith('contact.us.sent');
                         });
                     });
 

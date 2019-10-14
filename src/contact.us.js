@@ -31,8 +31,8 @@
             onSent: '&'
         };
 
-        this.controller = ['$location', '$routeParams', 'config', 'binarta', 'topicMessageDispatcher',
-            function ($location, $routeParams, config, binarta, topicMessageDispatcher) {
+        this.controller = ['$element', '$location', '$routeParams', 'config', 'binarta', 'topicMessageDispatcher',
+            function ($element, $location, $routeParams, config, binarta, topicMessageDispatcher) {
                 var $ctrl = this;
                 $ctrl.data = {};
                 $ctrl.violations = {};
@@ -71,6 +71,7 @@
                 };
 
                 function onSuccess() {
+                    $element.trigger('contact.us.sent');
                     $ctrl.sending = false;
                     reset();
                     if ($ctrl.onSent) $ctrl.onSent();
