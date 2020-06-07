@@ -21,7 +21,7 @@
                 <table style="width: 100%;">
                     <tr>
                         <td>
-                            <p style="font-size: 14px; font-weight: normal; margin-bottom: 10px;">\$message</p>
+                            <p style="font-size: 14px; font-weight: normal; margin-bottom: 10px;"><pre>\$message</pre></p>
 
                             <table class="divider" cellpadding="0" cellspacing="0" border="0" style="width: 100%;">
                                 <tr>
