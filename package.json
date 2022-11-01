@@ -5,7 +5,7 @@
     "karma-jasmine": "^1.0.2",
     "karma-phantomjs-launcher": "^1.0.0",
     "phantomjs": "^2.1.1",
-    "gulp": "^3.8.10",
+    "gulp": "^4.0.2",
     "gulp-angular-templatecache": "^1.5.0",
     "gulp-minify-html": "^0.1.8",
     "gulp-template": "^3.0.0"
